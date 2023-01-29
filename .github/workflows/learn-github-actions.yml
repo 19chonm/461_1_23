@@ -1,15 +1,13 @@
 name: learn-github-actions
 run-name: ${{ github.actor }} is learning GitHub Actions
 on: [pull_request]
+name: learn-github-actions
+run-name: ${{ github.actor }} is learning GitHub Actions
+on: [pull_request]
 jobs:
   check-bats-version:
+  check-bats-version:
     steps:
-      - uses: actions/checkout@v3
-      - name: Run install
-        run: ./run install
-      - name: Run build
-        run: ./run build
-      - name: Run Test
-        run: ./run test
-      - name: Run URL_FILE
-        run: ./run "${ABSFILEPATH}"
+      - name: Run autograde script
+      - run: ./.github/workflows/run.sh
+        shell: bash
