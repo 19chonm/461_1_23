@@ -8,7 +8,7 @@ package commands
 import (
 	"os"
 	"github.com/spf13/cobra"
-	"github.com/19chonm/461_1_23/functionality"
+	"github.com/19chonm/461_1_23/cli/functionality"
 )
 
 var urlfileCmd = &cobra.Command{
