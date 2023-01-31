@@ -13,8 +13,8 @@ import (
 
 var buildCmd = &cobra.Command{
 	Use: "build",
-	Short: "builds executable for app",
-	Long: "completes any compilation needed, builds executable with 'run' as name",
+	Short: "Builds executable for app",
+	Long: "Completes any compilation needed, builds executable with 'run' as name",
 	Args: cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args[]string) {
 		app := "go"

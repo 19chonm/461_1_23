@@ -13,12 +13,12 @@ import (
 var testCmd = &cobra.Command{
 	Use: "test",
 	Short: "runs test suite",
-	Long: `runs test suite located in -- exits 0 if everything is working. \n
-	The minimum requirement for this test suite is that it contain at \n
-	least 20 distinct test cases and achieve at least 80'%' code coverage \n
-	as measured by line coverage. The output from this invocation should be \n
-	a line written to stdout of the form: “X/Y test cases passed. Z% line \n
-	coverage achieved.” \n
+	Long: `Runs test suite located in -- exits 0 if everything is working.
+	The minimum requirement for this test suite is that it contain at 
+	least 20 distinct test cases and achieve at least 80'%' code coverage 
+	as measured by line coverage. The output from this invocation should be 
+	a line written to stdout of the form: “X/Y test cases passed. Z% line 
+	coverage achieved.” 
 	Should exit 0 on success.`,
 	Args: cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args[]string){

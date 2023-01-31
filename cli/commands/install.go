@@ -13,8 +13,8 @@ import (
 
 var installCmd = &cobra.Command{
 	Use: "install",
-	Short: "installs dependencies to use app",
-	Long: "as of now, only installs cobra package which is required to use our Go app",
+	Short: "Installs dependencies to use app",
+	Long: "As of now, only installs cobra package which is required to use our Go app",
 	Args: cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args[]string){
 		
