@@ -9,3 +9,7 @@ in order to create executable with 'run' as name.
 
 # CLI
 <build, install, test, 'URL_FILE'> commands are recognized where 'URL_FILE' must be an absolute path to a file in the system.
+
+# Helpful Commands
+go run .
+go build .
