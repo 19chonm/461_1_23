@@ -11,7 +11,7 @@ import (
 )
 
 var testCmd = &cobra.Command{
-	Use: "test",
+	Use:   "test",
 	Short: "runs test suite",
 	Long: `Runs test suite located in -- exits 0 if everything is working.
 	The minimum requirement for this test suite is that it contain at 
@@ -21,8 +21,8 @@ var testCmd = &cobra.Command{
 	coverage achieved.” 
 	Should exit 0 on success.`,
 	Args: cobra.ExactArgs(0),
-	Run: func(cmd *cobra.Command, args[]string){
-		fmt.Println("test command recognized")
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("CLI: test command recognized")
 	},
 }
 

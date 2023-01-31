@@ -1,5 +1,5 @@
 /*
-This file contains extra functionality for CLI commands. Make sure to 
+This file contains extra functionality for CLI commands. Make sure to
 capitalize first letter of functions to be used in external folders.
 */
 
@@ -10,25 +10,22 @@ import (
 	"os"
 )
 
-
-func test(input string) (int){
+func test(input string) int {
 	return 0
 }
 
-
-func Read_url_file(filename string) (int) {
+func Read_url_file(filename string) int {
 
 	contents, err := os.ReadFile(filename)
-    if err != nil {
-        fmt.Println("File reading error", err)
-        os.Exit(1)
-    }
-    fmt.Println("Contents of file:", string(contents))
-	
+	if err != nil {
+		fmt.Println("CLI: File reading error", err)
+		os.Exit(1)
+	}
+	fmt.Println("CLI: Contents of file:", string(contents))
+
 	return 0
 }
 
-
-func build() (int) {
+func build() int {
 	return 0
 }
