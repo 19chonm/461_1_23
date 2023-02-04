@@ -73,7 +73,7 @@ func Sort_modules(ratings chan rating) []rating {
 	})
 
 	Print_sorted_output(sorted_ratings)
-	
+
 	return sorted_ratings
 }
 
