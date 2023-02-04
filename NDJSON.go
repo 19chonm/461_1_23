@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 )
 
 // 					--- NDJSON ---
@@ -22,8 +23,8 @@ import (
 
 type rating struct {
 	NetScore       float64 `json:"NetScore"`
-	Url            float64 `json:"URL"`
-	License        float64 `json:"License"`
+	Url            string  `json:"URL"`
+	License        bool    `json:"License"`
 	Rampup         float64 `json:"RampUp"`
 	Correctness    float64 `json:"Correctness"`
 	Responsiveness float64 `json:"ResponsiveMaintainer"`
@@ -43,7 +44,7 @@ func NDJSON_test() {
 	datas := make([]rating, 10)
 
 	for i := 0; i < 10; i++ {
-		datas[i] = rating{NetScore: float64(i), License: float64(i)}
+		datas[i] = rating{NetScore: float64(i), License: (i != 0)}
 	}
 
 	for _, data := range datas {
@@ -57,4 +58,29 @@ func NDJSON_test() {
 
 	// fmt.Println(data)
 	// fmt.Println(string(jsonString))
+}
+
+func Sort_modules(ratings chan rating) []rating {
+	// create a slice to hold the values from the channel
+	sorted_ratings := []rating{}
+	for r := range ratings {
+		sorted_ratings = append(sorted_ratings, r)
+	}
+
+	// sort the slice
+	sort.Slice(sorted_ratings, func(p, q int) bool {
+		return sorted_ratings[p].NetScore > sorted_ratings[q].NetScore
+	})
+
+	Print_sorted_output(sorted_ratings)
+	
+	return sorted_ratings
+}
+
+func Print_sorted_output(ratings []rating) {
+	fmt.Println("----------------Sorted Ratings-----------------")
+	for r := range ratings {
+		fmt.Println(ratings[r].Url, "has a rating of:", ratings[r].NetScore)
+	}
+	fmt.Println("-----------------------------------------------")
 }
