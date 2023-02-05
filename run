@@ -1,5 +1,4 @@
-#!/bin/bash
-# Not sure if shebang line is needed
+#!/usr/bin/env bash
 
 # Simple wrapper for Go CLI
 # For commands "install" and "build", use "go run"
