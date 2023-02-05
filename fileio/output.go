@@ -1,4 +1,4 @@
-package main
+package fileio
 
 import (
 	"encoding/json"
@@ -21,7 +21,9 @@ import (
 // - However, the only major change between the two is that 8259 supports UTF8, which Go does by default
 // - Assuming this different is negligible, and that using Go's "json" library is okay
 
-type rating struct {
+const rating_ch_size = 100 // Size of the buffer for the URL channel
+
+type Rating struct {
 	NetScore       float64 `json:"NetScore"`
 	Url            string  `json:"URL"`
 	License        bool    `json:"License"`
@@ -31,56 +33,45 @@ type rating struct {
 	Busfactor      float64 `json:"BusFactor"`
 }
 
-func output_row(r rating) string {
+func MakeRatingsChannel() chan Rating {
+	return make(chan Rating, rating_ch_size)
+}
+
+func Sort_modules(ch chan Rating) []Rating {
+	// Create a slice to hold the values from the channel
+	sorted_ratings := []Rating{}
+
+	// Read in ratings from channel
+	for {
+		r, ok := <-ch
+		if !ok { // Channel has been closed
+			break
+		}
+		sorted_ratings = append(sorted_ratings, r)
+	}
+
+	// Sort the slice
+	sort.Slice(sorted_ratings, func(p, q int) bool {
+		return sorted_ratings[p].NetScore > sorted_ratings[q].NetScore
+	})
+
+	return sorted_ratings
+}
+
+func make_json_string(r Rating) string {
+	// Convert the Rating struct into a json string
 	jsonString, err := json.Marshal(r)
 	if err != nil {
 		panic("bad error")
 	}
 
-	return string(jsonString) + "\n"
+	return string(jsonString)
 }
 
-func NDJSON_test() {
-	datas := make([]rating, 10)
-
-	for i := 0; i < 10; i++ {
-		datas[i] = rating{NetScore: float64(i), License: (i != 0)}
-	}
-
-	for _, data := range datas {
-		// data := rating{NetScore: 1}
-		o := output_row(data)
-		fmt.Print(o)
-	}
-
-	// jsonString, err := json.Marshal(data)
-	// fmt.Println(err)
-
-	// fmt.Println(data)
-	// fmt.Println(string(jsonString))
-}
-
-func Sort_modules(ratings chan rating) []rating {
-	// create a slice to hold the values from the channel
-	sorted_ratings := []rating{}
+func Print_sorted_output(ratings []Rating) {
+	fmt.Println("\n\n----------------Sorted Ratings-----------------")
 	for r := range ratings {
-		sorted_ratings = append(sorted_ratings, r)
-	}
-
-	// sort the slice
-	sort.Slice(sorted_ratings, func(p, q int) bool {
-		return sorted_ratings[p].NetScore > sorted_ratings[q].NetScore
-	})
-
-	Print_sorted_output(sorted_ratings)
-
-	return sorted_ratings
-}
-
-func Print_sorted_output(ratings []rating) {
-	fmt.Println("----------------Sorted Ratings-----------------")
-	for r := range ratings {
-		fmt.Println(ratings[r].Url, "has a rating of:", ratings[r].NetScore)
+		fmt.Println(ratings[r].Url, "has a rating of:", make_json_string(ratings[r]))
 	}
 	fmt.Println("-----------------------------------------------")
 }
