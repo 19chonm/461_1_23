@@ -58,14 +58,14 @@ func ComputeResponsiveness(days float64) float64 {
 	return math.Exp(-0.05 * float64(days))
 }
 
-func ComputeBusFactor(total int, p1 int, p2 int, p3 int) float64 {
+func ComputeBusFactor(top int, total int) float64 {
 	// Compute the Bus factor by measuring the percentage of commits
 	// in the past year committed by the top three performers
 	if total <= 0 {
 		return 0
 	}
 
-	return 1 - (float64(p1+p2+p3) / float64(total))
+	return 1 - (float64(top) / float64(total))
 }
 
 func ComputeLicenseScore(license string) int {

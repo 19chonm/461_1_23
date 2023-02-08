@@ -254,7 +254,7 @@ func GetRepoLicense(url string) LicenseResponse {
 	return res
 }
 
-func GetRepoAverageLifespan(url string) Responsiveness {
+func GetRepoIssueAverageLifespan(url string) Responsiveness {
 	// Returns the average lifespan of issues (open -> close) and the number of issues sampled
 	user, repo, token, ok := validateInput(url)
 	if !ok {
@@ -288,7 +288,8 @@ func GetRepoAverageLifespan(url string) Responsiveness {
 	}
 	var responsiveness Responsiveness
 	if numIssues > 0 {
-		responsiveness = Responsiveness{AvgLifespan: totalTime / float64(numIssues), NumSampled: numIssues}
+		// Divide total time by 86400 to convert from seconds to days
+		responsiveness = Responsiveness{AvgLifespan: (totalTime / 86400) / float64(numIssues), NumSampled: numIssues}
 	} else {
 		responsiveness = Responsiveness{AvgLifespan: 0, NumSampled: 0}
 	}
@@ -296,17 +297,18 @@ func GetRepoAverageLifespan(url string) Responsiveness {
 	return responsiveness
 }
 
-func GetRepoContributors(url string) []Contributor {
-	// Returns a list of contributors with recent (< 1 year old) commits and their number of recent commits
+func GetRepoContributors(url string) (int, int) {
+	// From a list of contributors with recent (< 1 year old) commits and their number of recent commits,
+	// returns the sum of the number of commits by the top three contributors, and the total number of commits
 	user, repo, token, ok := validateInput(url)
 	if !ok {
-		return []Contributor{}
+		return 0, 0
 	}
 
 	res, err, statusCode := sendGithubRequest[ContributorStatsResponse](fmt.Sprintf("https://api.github.com/repos/%s/%s/stats/contributors", user, repo), token)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "sendGithubRequest(): %s statuscode: %d\n", err.Error(), statusCode)
-		return []Contributor{}
+		return 0, 0
 	}
 
 	var contributors []Contributor
@@ -325,5 +327,23 @@ func GetRepoContributors(url string) []Contributor {
 		}
 	}
 
-	return contributors
+	// Need to get top three contributions
+	var c1, c2, c3 int = 0, 0, 0
+	var tot int = 0
+
+	for _, c := range contributors {
+		tot += c.RecentCommits
+		if c.RecentCommits > c1 {
+			c3 = c2
+			c2 = c1
+			c1 = c.RecentCommits
+		} else if c.RecentCommits > c2 {
+			c3 = c2
+			c2 = c.RecentCommits
+		} else if c.RecentCommits > c3 {
+			c3 = c.RecentCommits
+		}
+	}
+
+	return c1 + c2 + c3, tot
 }

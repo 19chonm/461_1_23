@@ -11,21 +11,20 @@ import (
 func runTask(url string, ratingch chan<- fileio.Rating) {
 	fmt.Println("My job is", url)
 
-	l := api.GetRepoLicense(url)
-	fmt.Println("license: ", *l.License.Name)
-	a := api.GetRepoAverageLifespan(url)
-	fmt.Println("lifespan: ", a)
-	c := api.GetRepoContributors(url)
-	fmt.Println("contributors: ", c)
+	// Get Data from Github API
+	license_response := api.GetRepoLicense(url)
+	// fmt.Println("license: ", *license_response.License.Name)
+	responsiveness_response := api.GetRepoIssueAverageLifespan(url)
+	// fmt.Println("avg lifespan: ", responsiveness_response.AvgLifespan)
+	top_recent_commits, total_recent_commits := api.GetRepoContributors(url)
+	// fmt.Println("contributors: ", top_recent_commits, total_recent_commits)
 
-	// rating := fileio.Rating{NetScore: rand.Float64(), Rampup: rampupscore, Url: url} // Placeholder until real data implemented
-	// ratingch <- rating
-
+	// Compute Scores
 	rampup_score := metrics.ScanRepo(url)
-	correctness_score := metrics.ComputeCorrectness(0, 0, 0)
-	responsiveness_score := metrics.ComputeResponsiveness(0)
-	busfactor_score := metrics.ComputeBusFactor(0, 0, 0, 0)
-	license_score := metrics.ComputeLicenseScore("MIT License")
+	correctness_score := metrics.ComputeCorrectness(0, 0, 0) // no data yet
+	responsiveness_score := metrics.ComputeResponsiveness(responsiveness_response.AvgLifespan)
+	busfactor_score := metrics.ComputeBusFactor(top_recent_commits, total_recent_commits)
+	license_score := metrics.ComputeLicenseScore(*license_response.License.Name)
 
 	rampup_factor := metrics.Factor{Weight: 0.15, Value: rampup_score, AllOrNothing: false}
 	correctness_factor := metrics.Factor{Weight: 0.15, Value: correctness_score, AllOrNothing: false}
@@ -33,11 +32,8 @@ func runTask(url string, ratingch chan<- fileio.Rating) {
 	busfactor_factor := metrics.Factor{Weight: 0.3, Value: busfactor_score, AllOrNothing: false}
 	license_factor := metrics.Factor{Weight: 1.0, Value: float64(license_score), AllOrNothing: true}
 
-	// Assuming only valid urls get passed through
-	// url_factor := metrics.Factor{Weight: 1.0, Value: float64(url_score), AllOrNothing: true}
-
+	// Produce final rating
 	factors := []metrics.Factor{rampup_factor, correctness_factor, responsiveness_factor, busfactor_factor, license_factor}
-
 	r := fileio.Rating{NetScore: metrics.ComputeNetScore(factors),
 		Rampup:         rampup_score,
 		Url:            url,
@@ -46,5 +42,5 @@ func runTask(url string, ratingch chan<- fileio.Rating) {
 		Responsiveness: responsiveness_score,
 		Correctness:    correctness_score,
 	}
-	ratingch <- r
+	ratingch <- r // Send rating to rating channel to be sorted
 }
