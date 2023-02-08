@@ -1,4 +1,3 @@
-import subprocess
 
 # print(subprocess.run(["run.sh", "install"], shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8'))
 # print(subprocess.check_output(['run.sh', "install"], shell=True))
