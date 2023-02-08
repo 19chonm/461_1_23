@@ -13,11 +13,8 @@ func runTask(url string, ratingch chan<- fileio.Rating) {
 
 	// Get Data from Github API
 	license_response := api.GetRepoLicense(url)
-	// fmt.Println("license: ", *license_response.License.Name)
 	responsiveness_response := api.GetRepoIssueAverageLifespan(url)
-	// fmt.Println("avg lifespan: ", responsiveness_response.AvgLifespan)
 	top_recent_commits, total_recent_commits := api.GetRepoContributors(url)
-	// fmt.Println("contributors: ", top_recent_commits, total_recent_commits)
 
 	// Compute Scores
 	rampup_score := metrics.ScanRepo(url)
