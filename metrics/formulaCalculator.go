@@ -16,8 +16,7 @@ func ComputeNetScore(fs []Factor) float64 {
 	for _, f := range fs {
 		if f.AllOrNothing {
 			if f.Value == 0 {
-				sum = 0
-				break
+				return 0
 			}
 		}
 
@@ -57,7 +56,7 @@ func ComputeResponsiveness(days float64) float64 {
 	// Compute the responsiveness score based on average
 	// number of days to fix bug issues
 	if days < 0 {
-		return 1
+		return 0
 	}
 
 	return math.Exp(-0.05 * float64(days))
