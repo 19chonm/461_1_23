@@ -12,17 +12,30 @@ func runTask(url string, ratingch chan<- fileio.Rating) {
 	fmt.Println("My job is", url)
 
 	// Get Data from Github API
-	license_str, err1 := api.GetRepoLicense(url)
-	avg_lifespan, err2 := api.GetRepoIssueAverageLifespan(url)
-	top_recent_commits, total_recent_commits, err3 := api.GetRepoContributors(url)
+	license_str, err := api.GetRepoLicense(url)
+	if err != nil {
+		fmt.Println("worker: ERROR Unable to get data for ", url, " License Errored:", err)
+		return
+	}
 
-	if err1 || err2 || err3 {
-		fmt.Println("worker: ERROR Unable to get data for ", url, " License Errored:", err1, " AvgLifespan Errored:", err2, " ContributorsCommits Errored:", err3)
+	avg_lifespan, err := api.GetRepoIssueAverageLifespan(url)
+	if err != nil {
+		fmt.Println("worker: ERROR Unable to get data for ", url, " AvgLifespan Errored:", err)
+		return
+	}
+
+	top_recent_commits, total_recent_commits, err := api.GetRepoContributors(url)
+	if err != nil {
+		fmt.Println("worker: ERROR Unable to get data for ", url, " ContributorsCommits Errored:", err)
 		return
 	}
 
 	// Download repository and scan
-	rampup_score := metrics.ScanRepo(url)
+	rampup_score, err := metrics.ScanRepo(url)
+	if err != nil {
+		fmt.Println("worker: ERROR Unable to get data for ", url, " ScanRepo Errored:", err)
+		return
+	}
 
 	// Compute scores
 	correctness_score := metrics.ComputeCorrectness(0, 0, 0) // no data yet
