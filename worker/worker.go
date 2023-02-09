@@ -12,7 +12,7 @@ func runTask(url string, ratingch chan<- fileio.Rating) {
 	fmt.Println("My job is", url)
 
 	// Get Data from Github API
-	license_str, err := api.GetRepoLicense(url)
+	license_key, err := api.GetRepoLicense(url)
 	if err != nil {
 		fmt.Println("worker: ERROR Unable to get data for ", url, " License Errored:", err)
 		return
@@ -41,7 +41,7 @@ func runTask(url string, ratingch chan<- fileio.Rating) {
 	correctness_score := metrics.ComputeCorrectness(0, 0, 0) // no data yet
 	responsiveness_score := metrics.ComputeResponsiveness(avg_lifespan)
 	busfactor_score := metrics.ComputeBusFactor(top_recent_commits, total_recent_commits)
-	license_score := metrics.ComputeLicenseScore(license_str)
+	license_score := metrics.ComputeLicenseScore(license_key)
 
 	rampup_factor := metrics.Factor{Weight: 0.15, Value: rampup_score, AllOrNothing: false}
 	correctness_factor := metrics.Factor{Weight: 0.15, Value: correctness_score, AllOrNothing: false}

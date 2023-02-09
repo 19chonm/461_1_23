@@ -248,7 +248,7 @@ func GetRepoLicense(url string) (string, error) {
 	}
 
 	if res.License.Name != nil {
-		return *res.License.Name, nil
+		return *res.License.Key, nil
 	} else {
 		return "", fmt.Errorf("GetRepoLicense: License Name pointer is null")
 	}

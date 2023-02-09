@@ -74,9 +74,24 @@ func ComputeBusFactor(top int, total int) float64 {
 }
 
 func ComputeLicenseScore(license string) int {
-	if license == "MIT License" {
-		return 1
-	} else {
-		return 0
+	valid_licenses := []string{
+		"agpl-3.0",     // GNU Affero General Public License v3.0
+		"apache-2.0",   // Apache License 2.0
+		"bsd-2-clause", // FreeBSD (https://en.wikipedia.org/wiki/BSD_licenses)
+		"bsd-3-clause", // Modified BSD License
+		"bsl-1.0",      // Boost Software License 1.0
+		"gpl-2.0",      // GNU General Public License v2.0
+		"gpl-3.0",      // GNU General Public License v3.0
+		"lgpl-2.1",     // GNU Lesser General Public License v2.1
+		"mit",          // MIT License
+		"mpl-2.0",      // Mozilla Public License 2.0
 	}
+
+	for _, l := range valid_licenses {
+		if license == l {
+			return 1
+		}
+	}
+
+	return 0
 }
