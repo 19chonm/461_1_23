@@ -17,6 +17,8 @@ func ComputeNetScore(fs []Factor) float64 {
 		if f.AllOrNothing {
 			if f.Value == 0 {
 				return 0
+			} else {
+				continue
 			}
 		}
 
