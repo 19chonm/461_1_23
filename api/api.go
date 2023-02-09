@@ -74,6 +74,7 @@ type Contributor struct {
 }
 
 func validateInput(inputUrl string) (string, string, string, error) {
+func validateInput(inputUrl string) (string, string, string, error) {
 	user := ""
 	repo := ""
 	token := ""
@@ -81,18 +82,24 @@ func validateInput(inputUrl string) (string, string, string, error) {
 	// validate URL
 	if inputUrl == "" {
 		return user, repo, token, fmt.Errorf("validateInput: InputURL not provided")
+		return user, repo, token, fmt.Errorf("validateInput: InputURL not provided")
 	}
+
 
 	urlObject, err := url.Parse(inputUrl)
 	if err != nil {
 		return user, repo, token, fmt.Errorf("validateInput: InputURL parse error")
+		return user, repo, token, fmt.Errorf("validateInput: InputURL parse error")
 	}
 	if urlObject.Host != "github.com" {
 		return user, repo, token, fmt.Errorf("validateInput: InputURL is not a GitHub URL: %s", urlObject)
+		return user, repo, token, fmt.Errorf("validateInput: InputURL is not a GitHub URL: %s", urlObject)
 	}
+
 
 	path := strings.Split(urlObject.EscapedPath(), "/")[1:]
 	if len(path) != 2 {
+		return user, repo, token, fmt.Errorf("validateInput: InputURL does not point to a GitHub repository: %s", urlObject)
 		return user, repo, token, fmt.Errorf("validateInput: InputURL does not point to a GitHub repository: %s", urlObject)
 	}
 	user, repo = path[0], path[1]
@@ -102,8 +109,10 @@ func validateInput(inputUrl string) (string, string, string, error) {
 
 	if !ok {
 		return user, repo, token, fmt.Errorf("validateInput: Error getting token from environment variable")
+		return user, repo, token, fmt.Errorf("validateInput: Error getting token from environment variable")
 	}
 
+	return user, repo, token, nil
 	return user, repo, token, nil
 }
 
@@ -235,7 +244,11 @@ func sendGithubRequestList[T Response](endpoint string, token string, maxPages i
 }
 
 func GetRepoLicense(url string) (string, error) {
+func GetRepoLicense(url string) (string, error) {
 	// Returns information about the repository's license
+	user, repo, token, err := validateInput(url)
+	if err != nil {
+		return "", fmt.Errorf("GetRepoLicense: %s", err.Error())
 	user, repo, token, err := validateInput(url)
 	if err != nil {
 		return "", fmt.Errorf("GetRepoLicense: %s", err.Error())
@@ -245,8 +258,14 @@ func GetRepoLicense(url string) (string, error) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "sendGithubRequest(): %s status code: %d\n", err.Error(), statusCode)
 		return "", fmt.Errorf("GetRepoLicense: %s", err.Error())
+		return "", fmt.Errorf("GetRepoLicense: %s", err.Error())
 	}
 
+	if res.License.Name != nil {
+		return *res.License.Key, nil
+	} else {
+		return "", fmt.Errorf("GetRepoLicense: License Name pointer is null")
+	}
 	if res.License.Name != nil {
 		return *res.License.Key, nil
 	} else {
@@ -255,7 +274,11 @@ func GetRepoLicense(url string) (string, error) {
 }
 
 func GetRepoIssueAverageLifespan(url string) (float64, error) {
+func GetRepoIssueAverageLifespan(url string) (float64, error) {
 	// Returns the average lifespan of issues (open -> close) and the number of issues sampled
+	user, repo, token, err := validateInput(url)
+	if err != nil {
+		return 0.0, fmt.Errorf("GetRepoIssueAverageLifespan: %s", err.Error())
 	user, repo, token, err := validateInput(url)
 	if err != nil {
 		return 0.0, fmt.Errorf("GetRepoIssueAverageLifespan: %s", err.Error())
@@ -264,6 +287,7 @@ func GetRepoIssueAverageLifespan(url string) (float64, error) {
 	res, err, statusCode := sendGithubRequestList[IssueResponse](fmt.Sprintf("https://api.github.com/repos/%s/%s/issues?state=closed", user, repo), token, 5)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "sendGithubRequest(): %s statuscode: %d\n", err.Error(), statusCode)
+		return 0.0, fmt.Errorf("GetRepoIssueAverageLifespan: %s", err.Error())
 		return 0.0, fmt.Errorf("GetRepoIssueAverageLifespan: %s", err.Error())
 	}
 
@@ -277,9 +301,13 @@ func GetRepoIssueAverageLifespan(url string) (float64, error) {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "API: time.Parse(): %s\n", err.Error())
 			return 0.0, fmt.Errorf("GetRepoIssueAverageLifespan: %s", err.Error())
+			fmt.Fprintf(os.Stderr, "API: time.Parse(): %s\n", err.Error())
+			return 0.0, fmt.Errorf("GetRepoIssueAverageLifespan: %s", err.Error())
 		}
 		te, err := time.Parse(time.RFC3339, *issue.ClosedAt)
 		if err != nil {
+			fmt.Fprintf(os.Stderr, "API: time.Parse(): %s\n", err.Error())
+			return 0.0, fmt.Errorf("GetRepoIssueAverageLifespan: %s", err.Error())
 			fmt.Fprintf(os.Stderr, "API: time.Parse(): %s\n", err.Error())
 			return 0.0, fmt.Errorf("GetRepoIssueAverageLifespan: %s", err.Error())
 		}
@@ -290,13 +318,22 @@ func GetRepoIssueAverageLifespan(url string) (float64, error) {
 	if numIssues > 0 {
 		// Divide total time by 86400 to convert from seconds to days
 		responsiveness = Responsiveness{AvgLifespan: (totalTime / 86400) / float64(numIssues), NumSampled: numIssues}
+		// Divide total time by 86400 to convert from seconds to days
+		responsiveness = Responsiveness{AvgLifespan: (totalTime / 86400) / float64(numIssues), NumSampled: numIssues}
 	} else {
 		responsiveness = Responsiveness{AvgLifespan: 0, NumSampled: 0}
 	}
 
 	return responsiveness.AvgLifespan, nil
+	return responsiveness.AvgLifespan, nil
 }
 
+func GetRepoContributors(url string) (int, int, error) {
+	// From a list of contributors with recent (< 1 year old) commits and their number of recent commits,
+	// returns the sum of the number of commits by the top three contributors, and the total number of commits
+	user, repo, token, err := validateInput(url)
+	if err != nil {
+		return 0, 0, fmt.Errorf("GetRepoContributors: error on validate input")
 func GetRepoContributors(url string) (int, int, error) {
 	// From a list of contributors with recent (< 1 year old) commits and their number of recent commits,
 	// returns the sum of the number of commits by the top three contributors, and the total number of commits
@@ -308,6 +345,7 @@ func GetRepoContributors(url string) (int, int, error) {
 	res, err, statusCode := sendGithubRequest[ContributorStatsResponse](fmt.Sprintf("https://api.github.com/repos/%s/%s/stats/contributors", user, repo), token)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "sendGithubRequest(): %s statuscode: %d\n", err.Error(), statusCode)
+		return 0, 0, fmt.Errorf("GetRepoContributors: %s", err.Error())
 		return 0, 0, fmt.Errorf("GetRepoContributors: %s", err.Error())
 	}
 
@@ -346,31 +384,4 @@ func GetRepoContributors(url string) (int, int, error) {
 	}
 
 	return c1 + c2 + c3, tot, nil
-}
-
-func getPackageName(npmUrl string) (packageName string) {
-	i := strings.Index(npmUrl, "package")
-	return npmUrl[i+len("package")+1 : len(npmUrl)]
-}
-
-func NPMtoGithubUrl(npmUrl string) (githubUrl string, err error) {
-
-	packageName := getPackageName(npmUrl)
-	app := "npm"
-	arg := []string{"repo", packageName, "--browser", "false"}
-
-	exec_output := exec.Command(app, arg...)
-	stdout, err := exec_output.Output()
-
-	if err != nil {
-		fmt.Println("Error getting Github url from NPM url: %s", err)
-		return "", err
-	}
-
-	cmdOutput := string(stdout)
-	i := strings.Index(cmdOutput, "https://github.com/")
-	restOfStr := cmdOutput[i : len(cmdOutput)-1]
-	j := strings.Index(restOfStr, packageName)
-
-	return cmdOutput[i : i+j+len(packageName)], nil
 }
