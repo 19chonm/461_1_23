@@ -84,6 +84,7 @@ func validateInput(inputUrl string) (string, string, string, bool) {
 		fmt.Println("API: InputURL not provided")
 		return user, repo, token, valid
 	}
+
 	urlObject, err := url.Parse(inputUrl)
 	if err != nil {
 		fmt.Println("API: InputURL parse error")
@@ -93,6 +94,7 @@ func validateInput(inputUrl string) (string, string, string, bool) {
 		fmt.Println("API: InputURL is not a GitHub URL: ", urlObject)
 		return user, repo, token, valid
 	}
+
 	path := strings.Split(urlObject.EscapedPath(), "/")[1:]
 	if len(path) != 2 {
 		fmt.Println("API: InputURL does not point to a GitHub repository: ", urlObject)
@@ -238,33 +240,37 @@ func sendGithubRequestList[T Response](endpoint string, token string, maxPages i
 	}
 }
 
-func GetRepoLicense(url string) LicenseResponse {
+func GetRepoLicense(url string) (string, bool) {
 	// Returns information about the repository's license
 	user, repo, token, ok := validateInput(url)
 	if !ok {
-		return LicenseResponse{}
+		return "", true
 	}
 
 	res, err, statusCode := sendGithubRequest[LicenseResponse](fmt.Sprintf("https://api.github.com/repos/%s/%s/license", user, repo), token)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "sendGithubRequest(): %s status code: %d\n", err.Error(), statusCode)
-		return LicenseResponse{}
+		return "", true
 	}
 
-	return res
+	if res.License.Name != nil {
+		return *res.License.Name, false
+	} else {
+		return "", true
+	}
 }
 
-func GetRepoIssueAverageLifespan(url string) Responsiveness {
+func GetRepoIssueAverageLifespan(url string) (float64, bool) {
 	// Returns the average lifespan of issues (open -> close) and the number of issues sampled
 	user, repo, token, ok := validateInput(url)
 	if !ok {
-		return Responsiveness{}
+		return 0.0, true
 	}
 
 	res, err, statusCode := sendGithubRequestList[IssueResponse](fmt.Sprintf("https://api.github.com/repos/%s/%s/issues?state=closed", user, repo), token, 5)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "sendGithubRequest(): %s statuscode: %d\n", err.Error(), statusCode)
-		return Responsiveness{}
+		return 0.0, true
 	}
 
 	totalTime := 0.0
@@ -275,13 +281,13 @@ func GetRepoIssueAverageLifespan(url string) Responsiveness {
 		}
 		ts, err := time.Parse(time.RFC3339, *issue.CreatedAt)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "time.Parse(): %s\n", err.Error())
-			return Responsiveness{}
+			fmt.Fprintf(os.Stderr, "API: time.Parse(): %s\n", err.Error())
+			return 0.0, true
 		}
 		te, err := time.Parse(time.RFC3339, *issue.ClosedAt)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "time.Parse(): %s\n", err.Error())
-			return Responsiveness{}
+			fmt.Fprintf(os.Stderr, "API: time.Parse(): %s\n", err.Error())
+			return 0.0, true
 		}
 		totalTime += te.Sub(ts).Seconds()
 		numIssues += 1
@@ -294,21 +300,21 @@ func GetRepoIssueAverageLifespan(url string) Responsiveness {
 		responsiveness = Responsiveness{AvgLifespan: 0, NumSampled: 0}
 	}
 
-	return responsiveness
+	return responsiveness.AvgLifespan, false
 }
 
-func GetRepoContributors(url string) (int, int) {
+func GetRepoContributors(url string) (int, int, bool) {
 	// From a list of contributors with recent (< 1 year old) commits and their number of recent commits,
 	// returns the sum of the number of commits by the top three contributors, and the total number of commits
 	user, repo, token, ok := validateInput(url)
 	if !ok {
-		return 0, 0
+		return 0, 0, true
 	}
 
 	res, err, statusCode := sendGithubRequest[ContributorStatsResponse](fmt.Sprintf("https://api.github.com/repos/%s/%s/stats/contributors", user, repo), token)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "sendGithubRequest(): %s statuscode: %d\n", err.Error(), statusCode)
-		return 0, 0
+		return 0, 0, true
 	}
 
 	var contributors []Contributor
@@ -345,5 +351,5 @@ func GetRepoContributors(url string) (int, int) {
 		}
 	}
 
-	return c1 + c2 + c3, tot
+	return c1 + c2 + c3, tot, false
 }

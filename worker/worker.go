@@ -12,16 +12,23 @@ func runTask(url string, ratingch chan<- fileio.Rating) {
 	fmt.Println("My job is", url)
 
 	// Get Data from Github API
-	license_response := api.GetRepoLicense(url)
-	responsiveness_response := api.GetRepoIssueAverageLifespan(url)
-	top_recent_commits, total_recent_commits := api.GetRepoContributors(url)
+	license_str, err1 := api.GetRepoLicense(url)
+	avg_lifespan, err2 := api.GetRepoIssueAverageLifespan(url)
+	top_recent_commits, total_recent_commits, err3 := api.GetRepoContributors(url)
 
-	// Compute Scores
+	if err1 || err2 || err3 {
+		fmt.Println("worker: ERROR Unable to get data for ", url, " License Errored:", err1, " AvgLifespan Errored:", err2, " ContributorsCommits Errored:", err3)
+		return
+	}
+
+	// Download repository and scan
 	rampup_score := metrics.ScanRepo(url)
+
+	// Compute scores
 	correctness_score := metrics.ComputeCorrectness(0, 0, 0) // no data yet
-	responsiveness_score := metrics.ComputeResponsiveness(responsiveness_response.AvgLifespan)
+	responsiveness_score := metrics.ComputeResponsiveness(avg_lifespan)
 	busfactor_score := metrics.ComputeBusFactor(top_recent_commits, total_recent_commits)
-	license_score := metrics.ComputeLicenseScore(*license_response.License.Name)
+	license_score := metrics.ComputeLicenseScore(license_str)
 
 	rampup_factor := metrics.Factor{Weight: 0.15, Value: rampup_score, AllOrNothing: false}
 	correctness_factor := metrics.Factor{Weight: 0.15, Value: correctness_score, AllOrNothing: false}
