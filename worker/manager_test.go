@@ -1,4 +1,4 @@
-package testfiles
+package worker
 
 import (
 	"testing"
