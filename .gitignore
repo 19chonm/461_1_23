@@ -1,4 +1,5 @@
-# metric_cli
+.env
+metric_cli
 
 tmpl/index.html
 awesome-go
