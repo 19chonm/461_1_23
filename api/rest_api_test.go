@@ -1,9 +1,10 @@
-package testfiles
+package api
 
 import (
 	"testing"
 	"os"
-	api "github.com/19chonm/461_1_23/api"
+	// api 
+	"github.com/19chonm/461_1_23/api"
 )
 	// {"license":{"key":"mit","name":"MIT License","url":"https://api.github.com/licenses/mit"}}
 // Input URL Tests

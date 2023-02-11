@@ -1,4 +1,4 @@
-package testfiles
+package api
 
 import (
 	"testing"
