@@ -77,7 +77,7 @@ type Contributor struct {
 	RecentCommits int    `json:"recent_commits"`
 }
 
-func validateInput(inputUrl string) (string, string, string, error) {
+func ValidateInput(inputUrl string) (string, string, string, error) {
 	user := ""
 	repo := ""
 	token := ""
@@ -254,7 +254,7 @@ func sendGithubRequestList[T Response](endpoint string, token string, maxPages i
 
 func GetRepoLicense(url string) (string, error) {
 	// Returns information about the repository's license
-	user, repo, token, err := validateInput(url)
+	user, repo, token, err := ValidateInput(url)
 	if err != nil {
 		return "", fmt.Errorf("GetRepoLicense: %s", err.Error())
 	}
@@ -274,7 +274,7 @@ func GetRepoLicense(url string) (string, error) {
 
 func GetRepoIssueAverageLifespan(url string) (float64, error) {
 	// Returns the average lifespan of issues (open -> close) and the number of issues sampled
-	user, repo, token, err := validateInput(url)
+	user, repo, token, err := ValidateInput(url)
 	if err != nil {
 		return 0.0, fmt.Errorf("GetRepoIssueAverageLifespan: %s", err.Error())
 	}
@@ -318,7 +318,7 @@ func GetRepoIssueAverageLifespan(url string) (float64, error) {
 func GetRepoContributors(url string) (int, int, error) {
 	// From a list of contributors with recent (< 1 year old) commits and their number of recent commits,
 	// returns the sum of the number of commits by the top three contributors, and the total number of commits
-	user, repo, token, err := validateInput(url)
+	user, repo, token, err := ValidateInput(url)
 	if err != nil {
 		return 0, 0, fmt.Errorf("GetRepoContributors: error on validate input")
 	}
