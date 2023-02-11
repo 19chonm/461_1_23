@@ -23,13 +23,13 @@ func TestCorrectFactors(t *testing.T) {
 	requestFactors := [3]int64{24326, 418, 2156}
 	nodistFactors := [3]int64{1396, 56, 394}
 
-	var owner_repo_names [][]string
+	owner_repo_names := [5]string{
+		"https://github.com/facebook/react","https://github.com/axios/axios", 
+		"https://github.com/expressjs/express", "https://github.com/request/request",
+		"https://github.com/nullivex/nodist",
+	}
+	
 	var factors [][3]int64
-	owner_repo_names = append(owner_repo_names, []string{"facebook", "react"})
-	owner_repo_names = append(owner_repo_names, []string{"axios", "axios"})
-	owner_repo_names = append(owner_repo_names, []string{"expressjs", "express"})
-	owner_repo_names = append(owner_repo_names, []string{"request", "request"})
-	owner_repo_names = append(owner_repo_names, []string{"nullivex", "nodist"})
 	factors = append(factors, reactFactors)
 	factors = append(factors, axiosFactors)
 	factors = append(factors, expressFactors)
@@ -37,7 +37,7 @@ func TestCorrectFactors(t *testing.T) {
 	factors = append(factors, nodistFactors)
 
 	for i := range owner_repo_names {
-		f1, f2, f3, err := api.GetCorrectnessFactors(owner_repo_names[i][0], owner_repo_names[i][1])
+		f1, f2, f3, err := api.GetCorrectnessFactors(owner_repo_names[i])
 
 		if int64(f1) < (factors[i][0]) || int64(f2) < factors[i][1] || int64(f3) < factors[i][2] {
 			t.Errorf("user got: %d, %d, %d. want at least: %d, %d, %d", f1, f2, f3, factors[i][0], factors[i][1], factors[i][2])

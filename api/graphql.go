@@ -62,7 +62,7 @@ func BuildCorrectnessQuery(ownerName string, repoName string) (query map[string]
 }
 
 func GetCorrectnessFactors(url string) (watchers int64, stargazers int64, totalCommits int64, err error) {
-	ownerName, repoName, token, err := validateInput(url)
+	ownerName, repoName, token, err := ValidateInput(url)
 	if err != nil {
 		return 0, 0, 0, fmt.Errorf("GetCorrectnessFactors: Error on validate input")
 	}
