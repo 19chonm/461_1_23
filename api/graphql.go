@@ -37,7 +37,7 @@ type CorrectnessFactors struct {
 	}
 }
 
-func buildCorrectnessQuery(ownerName string, repoName string) (query map[string]string) {
+func BuildCorrectnessQuery(ownerName string, repoName string) (query map[string]string) {
 	var correctnessQuery = map[string]string{
 		"query": `
 		{
@@ -62,9 +62,9 @@ func buildCorrectnessQuery(ownerName string, repoName string) (query map[string]
 	return correctnessQuery
 }
 
-func getCorrectnessFactors(ownerName string, repoName string) (watchers int64, stargazers int64, totalCommits int64, err error) {
+func GetCorrectnessFactors(ownerName string, repoName string) (watchers int64, stargazers int64, totalCommits int64, err error) {
 
-	query := buildCorrectnessQuery(ownerName, repoName)
+	query := BuildCorrectnessQuery(ownerName, repoName)
 	token, ok := os.LookupEnv("GITHUB_TOKEN")
 
 	if !ok {
