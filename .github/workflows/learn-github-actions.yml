@@ -1,12 +1,9 @@
-name: learn-github-actions
-run-name: ${{ github.actor }} is learning GitHub Actions
-on: [pull_request]
-name: learn-github-actions
-run-name: ${{ github.actor }} is learning GitHub Actions
-on: [pull_request]
+name: run-commands
+run-name: ${{ github.actor }} is trying to integrate
+on: [push]
 jobs:
-  check-bats-version:
-  check-bats-version:
+  autograde-commands:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Run install
@@ -15,5 +12,7 @@ jobs:
         run: ./run build
       - name: Run Test
         run: ./run test
+      - name: Set env
+        run: echo "ABSFILEPATH=$(readlink -f test/urls_file.txt)" >> $GITHUB_ENV
       - name: Run URL_FILE
         run: ./run "${ABSFILEPATH}"
