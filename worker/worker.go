@@ -30,6 +30,12 @@ func runTask(url string, ratingch chan<- fileio.Rating) {
 		return
 	}
 
+	watchers, stargazers, totalCommits, err := api.GetCorrectnessFactors(url)
+	if err != nil {
+		fmt.Println("worker: ERROR Unable to get data for ", url, " GetCorrectnessFactors Errored:", err)
+		return
+	}
+
 	// Download repository and scan
 	rampup_score, err := metrics.ScanRepo(url)
 	if err != nil {
@@ -38,7 +44,7 @@ func runTask(url string, ratingch chan<- fileio.Rating) {
 	}
 
 	// Compute scores
-	correctness_score := metrics.ComputeCorrectness(0, 0, 0) // no data yet
+	correctness_score := metrics.ComputeCorrectness(watchers, stargazers, totalCommits) // no data yet
 	responsiveness_score := metrics.ComputeResponsiveness(avg_lifespan)
 	busfactor_score := metrics.ComputeBusFactor(top_recent_commits, total_recent_commits)
 	license_score := metrics.ComputeLicenseScore(license_key)
