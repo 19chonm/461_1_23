@@ -58,12 +58,12 @@ func Sort_modules(ch chan Rating) []Rating {
 	return sorted_ratings
 }
 
-func make_json_string(r Rating) string {
+func Make_json_string(r Rating) string {
 	// Convert the Rating struct into a json string
 	jsonString, err := json.Marshal(r)
 	if err != nil {
 		fmt.Printf("for: %+v\n", r)
-		panic("fileio: make_json_string fail")
+		panic("fileio: Make_json_string fail")
 	}
 
 	return string(jsonString)
@@ -72,7 +72,7 @@ func make_json_string(r Rating) string {
 func Print_sorted_output(ratings []Rating) {
 	fmt.Println("\n\n----------------Sorted Ratings-----------------")
 	for r := range ratings {
-		fmt.Println(ratings[r].Url, "has a rating of:", make_json_string(ratings[r]))
+		fmt.Println(ratings[r].Url, "has a rating of:", Make_json_string(ratings[r]))
 	}
 	fmt.Println("-----------------------------------------------")
 }
