@@ -7,11 +7,12 @@ package commands
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
+
+	"github.com/spf13/cobra"
 	//"github.com/19chonm/461_1_23/api"
 )
 
@@ -56,6 +57,7 @@ var testCmd = &cobra.Command{
 
 		if err != nil || testsPassed > testsRan {
 			fmt.Println("CLI: ", err.Error())
+			fmt.Println("SHIT ahppeingds")
 			os.Exit(1)
 		}
 
