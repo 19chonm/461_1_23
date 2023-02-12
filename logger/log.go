@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"fmt"
 	"os"
 
 	log "github.com/sirupsen/logrus"
@@ -21,9 +20,6 @@ func init() {
 	}
 
 	file, err := os.Create(path + "log.json")
-	if err != nil {
-		fmt.Println("Failed to create logfile")
-	}
 	log.SetOutput(file)
 
 	logLvl := os.Getenv(("LOG_LEVEL"))

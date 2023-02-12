@@ -6,7 +6,7 @@ field of command variable.
 package commands
 
 import (
-	"fmt"
+	"github.com/19chonm/461_1_23/logger"
 	"github.com/spf13/cobra"
 )
 
@@ -22,7 +22,8 @@ var testCmd = &cobra.Command{
 	Should exit 0 on success.`,
 	Args: cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("CLI: test command recognized")
+		// fmt.Println("CLI: test command recognized")
+		logger.InfoMsg("CLI: test command recognized")
 	},
 }
 

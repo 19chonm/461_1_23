@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+
+	"github.com/19chonm/461_1_23/logger"
 )
 
 // 					--- NDJSON ---
@@ -62,8 +64,10 @@ func make_json_string(r Rating) string {
 	// Convert the Rating struct into a json string
 	jsonString, err := json.Marshal(r)
 	if err != nil {
+		logger.DebugMsg(fmt.Sprintf("for: %+v\n", r), "fileio: make_json_string fail")
 		fmt.Printf("for: %+v\n", r)
 		panic("fileio: make_json_string fail")
+
 	}
 
 	return string(jsonString)
