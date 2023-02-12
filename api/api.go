@@ -84,20 +84,20 @@ func ValidateInput(inputUrl string) (string, string, string, error) {
 
 	// validate URL
 	if inputUrl == "" {
-		return user, repo, token, fmt.Errorf("validateInput: InputURL not provided")
+		return user, repo, token, fmt.Errorf("ValidateInput: InputURL not provided")
 	}
 
 	urlObject, err := url.Parse(inputUrl)
 	if err != nil {
-		return user, repo, token, fmt.Errorf("validateInput: InputURL parse error")
+		return user, repo, token, fmt.Errorf("ValidateInput: InputURL parse error")
 	}
 	if urlObject.Host != "github.com" {
-		return user, repo, token, fmt.Errorf("validateInput: InputURL is not a GitHub URL: %s", urlObject)
+		return user, repo, token, fmt.Errorf("ValidateInput: InputURL is not a GitHub URL: %s", urlObject)
 	}
 
 	path := strings.Split(urlObject.EscapedPath(), "/")[1:]
 	if len(path) != 2 {
-		return user, repo, token, fmt.Errorf("validateInput: InputURL does not point to a GitHub repository: %s", urlObject)
+		return user, repo, token, fmt.Errorf("ValidateInput: InputURL does not point to a GitHub repository: %s", urlObject)
 	}
 	user, repo = path[0], path[1]
 
@@ -105,7 +105,7 @@ func ValidateInput(inputUrl string) (string, string, string, error) {
 	token, ok := os.LookupEnv("GITHUB_TOKEN")
 
 	if !ok {
-		return user, repo, token, fmt.Errorf("validateInput: Error getting token from environment variable")
+		return user, repo, token, fmt.Errorf("ValidateInput: Error getting token from environment variable")
 	}
 
 	return user, repo, token, nil
