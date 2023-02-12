@@ -178,7 +178,8 @@ func Test_SetQueryParameter_Error(t *testing.T) {
 	}
 }
 
-func Test_GetRepoContributors_Succes(t *testing.T) {
+//TODO: Add error case as well
+func Test_GetRepoContributors_Success(t *testing.T) {
 	goodInputUrl := "https://github.com/facebook/react" // FIX: this is not a 
 	top3, total, err := GetRepoContributors(goodInputUrl) 
 	if !(top3 > 0) {
@@ -189,5 +190,17 @@ func Test_GetRepoContributors_Succes(t *testing.T) {
 	}
 	if err != nil {
 		t.Errorf("Got RepoContributors err")
+	}
+}
+
+//TODO: Add error case as well
+func Test_GetRepoIssueAverageLifespan_Success(t *testing.T) {
+	goodInputUrl := "https://github.com/facebook/react" // FIX: this is not a 
+	avgLifespan, err := GetRepoIssueAverageLifespan(goodInputUrl) 
+	if !(avgLifespan > 0) {
+		t.Errorf("IssueAvgLifesapn.avgLifespan want d, got: d")
+	}
+	if err != nil {
+		t.Errorf("Got IssueAvgLifesapn err")
 	}
 }
