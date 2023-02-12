@@ -8,45 +8,51 @@ import (
 	"github.com/19chonm/461_1_23/metrics"
 )
 
-func runTask(url string, ratingch chan<- fileio.Rating) {
+func runTask(url string, woutputch chan<- fileio.WorkerOutput) {
 	fmt.Println("My job is", url)
 
 	// Convert url to Github URL
 	github_url, err := api.GetGithubUrl(url)
 	if err != nil {
-		fmt.Println("worker: ERROR Unable to get github url ", url, " Error:", err)
+		// fmt.Println("worker: ERROR Unable to get github url ", url, " Error:", err)
+		woutputch <- fileio.WorkerOutput{WorkerErr: fmt.Errorf("worker: ERROR Unable to get github url %s  Error: %s", url, err.Error())}
 		return
 	}
 
 	// Get Data from Github API
 	license_key, err := api.GetRepoLicense(github_url)
 	if err != nil {
-		fmt.Println("worker: ERROR Unable to get data for ", github_url, " License Errored:", err)
+		// fmt.Println("worker: ERROR Unable to get data for ", github_url, " License Errored:", err)
+		woutputch <- fileio.WorkerOutput{WorkerErr: fmt.Errorf("worker: ERROR Unable to get github url %s  License Errored: %s", url, err.Error())}
 		return
 	}
 
 	avg_lifespan, err := api.GetRepoIssueAverageLifespan(github_url)
 	if err != nil {
-		fmt.Println("worker: ERROR Unable to get data for ", github_url, " AvgLifespan Errored:", err)
+		// fmt.Println("worker: ERROR Unable to get data for ", github_url, " AvgLifespan Errored:", err)
+		woutputch <- fileio.WorkerOutput{WorkerErr: fmt.Errorf("worker: ERROR Unable to get data for %s  AvgLifespan Errored: %s", url, err.Error())}
 		return
 	}
 
 	top_recent_commits, total_recent_commits, err := api.GetRepoContributors(github_url)
 	if err != nil {
-		fmt.Println("worker: ERROR Unable to get data for ", github_url, " ContributorsCommits Errored:", err)
+		// fmt.Println("worker: ERROR Unable to get data for ", github_url, " ContributorsCommits Errored:", err)
+		woutputch <- fileio.WorkerOutput{WorkerErr: fmt.Errorf("worker: ERROR Unable to get data for %s  ContributorsCommits Errored: %s", url, err.Error())}
 		return
 	}
 
 	watchers, stargazers, totalCommits, err := api.GetCorrectnessFactors(github_url)
 	if err != nil {
-		fmt.Println("worker: ERROR Unable to get data for ", github_url, " GetCorrectnessFactors Errored:", err)
+		// fmt.Println("worker: ERROR Unable to get data for ", github_url, " GetCorrectnessFactors Errored:", err)
+		woutputch <- fileio.WorkerOutput{WorkerErr: fmt.Errorf("worker: ERROR Unable to get data for %s  GetCorrectnessFactors Errored: %s", url, err.Error())}
 		return
 	}
 
 	// Download repository and scan
 	rampup_score, err := metrics.ScanRepo(github_url)
 	if err != nil {
-		fmt.Println("worker: ERROR Unable to get data for ", github_url, " ScanRepo Errored:", err)
+		// fmt.Println("worker: ERROR Unable to get data for ", github_url, " ScanRepo Errored:", err)
+		woutputch <- fileio.WorkerOutput{WorkerErr: fmt.Errorf("worker: ERROR Unable to get data for %s  ScanRepo Errored: %s", url, err.Error())}
 		return
 	}
 
@@ -72,5 +78,5 @@ func runTask(url string, ratingch chan<- fileio.Rating) {
 		Responsiveness: responsiveness_score,
 		Correctness:    correctness_score,
 	}
-	ratingch <- r // Send rating to rating channel to be sorted
+	woutputch <- fileio.WorkerOutput{WorkerRating: r, WorkerErr: nil} // Send rating to rating channel to be sorted
 }

@@ -3,6 +3,7 @@ package fileio
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"sort"
 )
 
@@ -21,7 +22,7 @@ import (
 // - However, the only major change between the two is that 8259 supports UTF8, which Go does by default
 // - Assuming this different is negligible, and that using Go's "json" library is okay
 
-const rating_ch_size = 100 // Size of the buffer for the URL channel
+const worker_output_ch_size = 100 // Size of the buffer for the Worker's output
 
 type Rating struct {
 	NetScore       float64 `json:"NetScore"`
@@ -33,21 +34,32 @@ type Rating struct {
 	Busfactor      float64 `json:"BusFactor"`
 }
 
-func MakeRatingsChannel() chan Rating {
-	return make(chan Rating, rating_ch_size)
+type WorkerOutput struct {
+	WorkerRating Rating
+	WorkerErr    error
 }
 
-func Sort_modules(ch chan Rating) []Rating {
+func MakeWorkerOutputChannel() chan WorkerOutput {
+	return make(chan WorkerOutput, worker_output_ch_size)
+}
+
+func ReadWorkerResults(ch chan WorkerOutput) ([]Rating, []error) {
 	// Create a slice to hold the values from the channel
 	sorted_ratings := []Rating{}
+	errors := []error{}
 
 	// Read in ratings from channel
 	for {
-		r, ok := <-ch
+		wo, ok := <-ch
 		if !ok { // Channel has been closed
 			break
 		}
-		sorted_ratings = append(sorted_ratings, r)
+
+		if wo.WorkerErr != nil { // If error, record the error
+			errors = append(errors, wo.WorkerErr)
+		} else { // Else, record the result
+			sorted_ratings = append(sorted_ratings, wo.WorkerRating)
+		}
 	}
 
 	// Sort the slice
@@ -55,7 +67,7 @@ func Sort_modules(ch chan Rating) []Rating {
 		return sorted_ratings[p].NetScore > sorted_ratings[q].NetScore
 	})
 
-	return sorted_ratings
+	return sorted_ratings, errors
 }
 
 func make_json_string(r Rating) string {
@@ -75,4 +87,11 @@ func Print_sorted_output(ratings []Rating) {
 		fmt.Println(ratings[r].Url, "has a rating of:", make_json_string(ratings[r]))
 	}
 	fmt.Println("-----------------------------------------------")
+}
+
+func PrintErrors(errs []error) {
+	fmt.Fprintln(os.Stderr, "Errors in the worker stage: ")
+	for _, e := range errs {
+		fmt.Fprintln(os.Stderr, e)
+	}
 }
