@@ -2,9 +2,20 @@ package api
 
 import (
 	"fmt"
+	"io"
 	"testing"
 	"os"
+	"net/http"
+	// "strings"
+	"bytes"
+	// "encoding/json"
 )
+
+type TestType struct {
+	Foo int `json:"foo"`
+	Bar string    `json:"bar"`
+}
+
 // {"license":{"key":"mit","name":"MIT License","url":"https://api.github.com/licenses/mit"}}
 // Input URL Tests
 func TestGoodInput(t *testing.T) {
@@ -49,3 +60,21 @@ func TestBadInput(t *testing.T) {
 	}
 }
 
+func TestDecodeResponse(t *testing.T) {
+	res := http.Response{
+        Body: io.NopCloser(bytes.NewBufferString("{\"foo\": 461, \"bar\": \"Project\"}")),
+    }
+	correctFoo := 461
+	correctBar := "Project"
+	jsonRes, err := DecodeResponse[TestType](&res)
+
+	if jsonRes.Foo != correctFoo {
+		t.Errorf("jsonRes.Foo got: %d want: %d.", jsonRes.Foo, correctFoo)
+	}
+	if jsonRes.Bar != correctBar {
+		t.Errorf("jsonRes.Bar got: %s want: %s.", jsonRes.Bar, correctBar)
+	}
+	if err != nil {
+		t.Errorf("err got: %v", err)
+	}
+}
