@@ -275,6 +275,7 @@ func Test_SendGithubRequest_RequestFailure(t *testing.T) {
 
 func Test_SendGithubRequest_202Loop(t *testing.T) {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// w.Write()
 	})
 	go func() {
 		log.Fatal(http.ListenAndServe(":3461", nil))
