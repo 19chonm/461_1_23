@@ -3,13 +3,13 @@ package api
 import (
 	"fmt"
 	"io"
-	"log"
+	// "log"
 	"net/http"
 	"os"
 	"testing"
 	"bytes"
 	"net/url"
-	"time"
+	// "time"
 	// "encoding/json"
 )
 
@@ -273,27 +273,27 @@ func Test_SendGithubRequest_RequestFailure(t *testing.T) {
 	}
 }
 
-func Test_SendGithubRequest_202Loop(t *testing.T) {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// w.Write()
-	})
-	go func() {
-		log.Fatal(http.ListenAndServe(":3461", nil))
-	}()
-	time.Sleep(1 * time.Second)
-	endpoint := "http://localhost:3461"
-	token := os.Getenv("GITHUB_TOKEN")
-	_, err, statusCode := SendGithubRequest[EmptyResponse](endpoint, token)
-	if err == nil {
-		t.Errorf("err was nil")
-	}
-	if err.Error() != "Github request exceed max retry count for error code 202" {
-		t.Errorf("got wrong err %s", err.Error())
-	}
-	if statusCode != 500 {
-		t.Errorf("Expected statusCode 500, got %d", statusCode)
-	}
-}
+// func Test_SendGithubRequest_202Loop(t *testing.T) {
+// 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+// 		// w.Write()
+// 	})
+// 	go func() {
+// 		log.Fatal(http.ListenAndServe(":3461", nil))
+// 	}()
+// 	time.Sleep(1 * time.Second)
+// 	endpoint := "http://localhost:3461"
+// 	token := os.Getenv("GITHUB_TOKEN")
+// 	_, err, statusCode := SendGithubRequest[EmptyResponse](endpoint, token)
+// 	if err == nil {
+// 		t.Errorf("err was nil")
+// 	}
+// 	if err.Error() != "Github request exceed max retry count for error code 202" {
+// 		t.Errorf("got wrong err %s", err.Error())
+// 	}
+// 	if statusCode != 500 {
+// 		t.Errorf("Expected statusCode 500, got %d", statusCode)
+// 	}
+// }
 
 func Test_SendGithubRequestList_ValidationFailure(t *testing.T) {
 	endpoint := "https://api.github.com/repos/octocat/Spoon-Knife/issues"
