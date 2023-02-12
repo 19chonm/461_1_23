@@ -24,13 +24,13 @@ import (
 const rating_ch_size = 100 // Size of the buffer for the URL channel
 
 type Rating struct {
-	NetScore       float64 `json:"NetScore"`
 	Url            string  `json:"URL"`
-	License        float64 `json:"License"`
-	Rampup         float64 `json:"RampUp"`
-	Correctness    float64 `json:"Correctness"`
-	Responsiveness float64 `json:"ResponsiveMaintainer"`
-	Busfactor      float64 `json:"BusFactor"`
+	NetScore       float64 `json:"NET_SCORE"`
+	Rampup         float64 `json:"RAMP_UP_SCORE"`
+	Correctness    float64 `json:"CORRECTNESS_SCORE"`
+	Busfactor      float64 `json:"BUS_FACTOR_SCORE"`
+	Responsiveness float64 `json:"RESPONSIVE_MAINTAINER_SCORE"`
+	License        float64 `json:"LICENSE_SCORE"`
 }
 
 func MakeRatingsChannel() chan Rating {
@@ -70,9 +70,7 @@ func Make_json_string(r Rating) string {
 }
 
 func Print_sorted_output(ratings []Rating) {
-	fmt.Println("\n\n----------------Sorted Ratings-----------------")
-	for r := range ratings {
-		fmt.Println(ratings[r].Url, "has a rating of:", Make_json_string(ratings[r]))
+	for i := range ratings {
+		fmt.Println(Make_json_string(ratings[i]))
 	}
-	fmt.Println("-----------------------------------------------")
 }

@@ -14,7 +14,7 @@ func Test_MakeRatingsChannel_Success(t *testing.T) {
 
 // This don't work and I don't know why
 // func Test_SortModule_Success(t *testing.T) {
-// 	ch := MakeRatingsChannel() 
+// 	ch := MakeRatingsChannel()
 // 	sorted_ratings := Sort_modules(ch)
 // 	// correct_ratings := ????
 // 	if sorted_ratings == nil {
@@ -27,9 +27,9 @@ func Test_MakeRatingsChannel_Success(t *testing.T) {
 // func Test_SortModule_Fail(t *testing.T) {
 // }
 
-func Test_Make_json_string_Success(t *testing.T) {	
+func Test_Make_json_string_Success(t *testing.T) {
 	goodUrl := "https://github.com/facebook/react"
-	r := Rating{75, goodUrl, 5, 10, 15, 20, 25}
+	r := Rating{goodUrl, 75, 5, 10, 15, 20, 25}
 	jsonStringString := Make_json_string(r)
 
 	if jsonStringString == "" {
@@ -40,4 +40,3 @@ func Test_Make_json_string_Success(t *testing.T) {
 func Test_Make_json_string_Fail(t *testing.T) {
 
 }
-
