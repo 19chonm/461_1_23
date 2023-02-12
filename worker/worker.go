@@ -8,7 +8,7 @@ import (
 	"github.com/19chonm/461_1_23/metrics"
 )
 
-func RunTask(url string, ratingch chan<- fileio.Rating) {
+func runTask(url string, ratingch chan<- fileio.Rating) {
 	fmt.Println("My job is", url)
 
 	// Convert url to Github URL

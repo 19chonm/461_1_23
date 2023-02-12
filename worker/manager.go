@@ -24,7 +24,7 @@ func StartWorkers(urlch <-chan string, ratingch chan<- fileio.Rating) {
 					wg.Done()
 					return
 				}
-				RunTask(url, ratingch)
+				runTask(url, ratingch)
 			}
 		}()
 	}

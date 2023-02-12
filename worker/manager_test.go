@@ -49,33 +49,16 @@ func TestManagerBadInput(t *testing.T) {
 
 	for {
 		r, ok := <-rating_ch
-		if !ok { // Channel has been closed
+		if !ok {
 			break
 		}
 		ratings = append(ratings, r)
 	}
 
-	//testing logic
+	// bad url should make a rating of default values
 	for _, rating := range ratings {
 		if rating.Busfactor != 0 && rating.Correctness != 0 && rating.License != 0 && rating.NetScore != 0 && rating.Rampup != 0 && rating.Responsiveness != 0 {
 			t.Errorf("ratings should not have been created")
 		}
 	}
 }
-
-// removal because manager should expect npm urls
-// func TestManagerNPMUrl(t *testing.T) {
-// 	url_ch := make(chan string, url_ch_size)
-// 	rating_ch := make(chan fileio.Rating, rating_ch_size)
-// 	url_ch <- "https://www.npmjs.com/package/react"
-// 	url_ch <- "https://www.npmjs.com/package/express"
-
-// 	worker.StartWorkers(url_ch, rating_ch)
-
-// 	//testing logic
-// 	for rating := range rating_ch {
-// 		if rating.Busfactor != 0 && rating.Correctness != 0 && rating.License != false && rating.NetScore != 0 && rating.Rampup != 0 && rating.Responsiveness != 0 {
-// 			t.Errorf("ratings should not have been created")
-// 		}
-// 	}
-// }

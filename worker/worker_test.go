@@ -6,24 +6,10 @@ import (
 	"github.com/19chonm/461_1_23/fileio"
 )
 
-/*
-Test to make sure rating channel is filled up
-*/
-
-// func TestWorkerGoodInput(t *testing.T) {
-// 	rating_ch := make(chan fileio.Rating, 1)
-// 	RunTask("https://github.com/axios/axios", rating_ch)
-// 	RunTask("https://github.com/nullivex/nodist", rating_ch)
-// 	//close(rating_ch)
-// 	if len(rating_ch) == 0 {
-// 		t.Errorf("rating channel was not updated")
-// 	}
-// 	close(rating_ch)
-// }
-
+// success test
 func TestWorkerPositiveScore(t *testing.T) {
 	rating_ch := make(chan fileio.Rating, 1)
-	RunTask("https://github.com/nullivex/nodist", rating_ch)
+	runTask("https://github.com/nullivex/nodist", rating_ch)
 	close(rating_ch)
 	for rating := range rating_ch {
 		if rating.NetScore == 0 {
@@ -32,21 +18,22 @@ func TestWorkerPositiveScore(t *testing.T) {
 	}
 }
 
+// test with bad url
 func TestWorkerBadInput(t *testing.T) {
 	rating_ch := make(chan fileio.Rating, 1)
-	RunTask("https://badurl.com/blabla/test", rating_ch)
+	runTask("https://badurl.com/blabla/test", rating_ch)
 	close(rating_ch)
 	if len(rating_ch) != 0 {
 		t.Errorf("rating channel should not have been updated")
 	}
 }
 
+// test with incorrect owner for repo
 func TestWorkerRatingFail(t *testing.T) {
 	rating_ch := make(chan fileio.Rating, 1)
 
-	//change this
 	incorrectUrl := "https://github.com/incorrectownername/react"
-	RunTask(incorrectUrl, rating_ch)
+	runTask(incorrectUrl, rating_ch)
 	close(rating_ch)
 
 	for rating := range rating_ch {
@@ -56,12 +43,12 @@ func TestWorkerRatingFail(t *testing.T) {
 	}
 }
 
+// tests for a package that should have net score of 0 because of license
 func TestWorkerLicenseFail(t *testing.T) {
 	rating_ch := make(chan fileio.Rating, 1)
 
-	//change this
 	incorrectUrl := "https://github.com/expressjs/express"
-	RunTask(incorrectUrl, rating_ch)
+	runTask(incorrectUrl, rating_ch)
 	close(rating_ch)
 	for rating := range rating_ch {
 		if rating.NetScore != 0 && rating.License == 0 {
