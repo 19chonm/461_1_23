@@ -371,7 +371,7 @@ func getPackageName(npmUrl string) (packageName string) {
 	return npmUrl[i+len("package")+1 : len(npmUrl)]
 }
 
-func getNthOccurance(s string, cha rune, i int) int {
+func GetNthOccurance(s string, cha rune, i int) int {
 	// Find Nth occurance of a character in a string, return the index
 	cnt := 0
 	for z, c := range s {
@@ -406,7 +406,7 @@ func GetGithubUrl(npmUrl string) (githubUrl string, err error) {
 	stdout, err := exec_output.Output()
 
 	if err != nil {
-		fmt.Printf("Error getting Github url from NPM url: %s\n", err.Error())
+		fmt.Printf("Error getting Github url from NPM url: %s", err)
 		return "", err
 	}
 
@@ -419,7 +419,7 @@ func GetGithubUrl(npmUrl string) (githubUrl string, err error) {
 	i := strings.Index(cmdOutput, "https://github.com/")
 	restOfStr := cmdOutput[i : len(cmdOutput)-1]
 	j := strings.Index(restOfStr, "\n")     // Filter to end of new line
-	k := getNthOccurance(restOfStr, '/', 5) // Find 5th /
+	k := GetNthOccurance(restOfStr, '/', 5) // Find 5th /
 
 	// Get correct substring so we get a github url in the following format:
 	// https://github.com/[owner]/[repo]

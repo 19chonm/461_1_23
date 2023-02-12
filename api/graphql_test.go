@@ -27,7 +27,7 @@ func TestCorrectFactors(t *testing.T) {
 		"https://github.com/expressjs/express", "https://github.com/request/request",
 		"https://github.com/nullivex/nodist",
 	}
-	
+
 	var factors [][3]int64
 	factors = append(factors, reactFactors)
 	factors = append(factors, axiosFactors)

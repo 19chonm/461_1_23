@@ -8,6 +8,11 @@ package commands
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"os"
+	"os/exec"
+	"strings"
+	"regexp"
+	//"github.com/19chonm/461_1_23/api"
 )
 
 var testCmd = &cobra.Command{
@@ -22,7 +27,41 @@ var testCmd = &cobra.Command{
 	Should exit 0 on success.`,
 	Args: cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("CLI: test command recognized")
+		//packagesToTest := []string{"api/", "worker/"}
+
+		app := "go"
+		testArgs := []string{"test", "./...", "-cover", "-v"}
+
+		exec_output := exec.Command(app, testArgs...)
+		stdout, err := exec_output.CombinedOutput()
+
+		// distinction between "PASS" and "--- PASS" because if all tests cases pass,
+		// "PASS" is printed out again
+		output := string(stdout)
+		testsPassed := strings.Count(output, "--- PASS")
+		testsRan := strings.Count(output, "=== RUN")
+		
+		r := regexp.MustCompile(`coverage:\s*\d+\.\d+%\sof\sstatements`)
+		matches := r.FindStringSubmatch(output)
+		coverage := matches[0]
+
+		// covIdx := strings.Index(output, "coverage: ")
+		// statIdx := strings.Index(output, " of statements")
+		// subStr := output[covIdx:statIdx]
+		// fmt.Println(subStr)
+		// begIdx := api.GetNthOccurance(subStr, 20, 1)
+		// endIdx:= api.GetNthOccurance(subStr, 20, 2)
+		// cove := subStr[begIdx+1:endIdx]
+		// //coverage := output[numsIdx+1:endIdx]
+
+		if err != nil || testsPassed > testsRan{
+			fmt.Println("CLI: ", err.Error())
+			os.Exit(1)
+		}
+	
+		fmt.Printf("%d/%d test cases passed. %s line coverage achieved\n", testsPassed, testsRan, coverage)
+		os.Exit(0)
+		
 	},
 }
 
