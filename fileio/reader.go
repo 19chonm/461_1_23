@@ -51,7 +51,8 @@ func ReadFile(path string, ch chan<- string) {
 			ch <- scanner.Text()
 		} else {
 			// Abort entire process if there is an invalid URL in the file
-			fmt.Fprintf(os.Stderr, "Error processing file, invalid url: %s\n", scanner.Text())
+			// fmt.Fprintf(os.Stderr, "Error processing file, invalid url: %s\n", scanner.Text())
+			logger.DebugMsg(fmt.Sprintf("Error processing file, invalid url: %s\n", scanner.Text()))
 			os.Exit(1)
 		}
 	}
