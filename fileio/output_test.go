@@ -2,8 +2,6 @@ package fileio
 
 import (
 	"testing"
-	// "fmt"
-	// "sort"
 )
 
 // I don't think I have to do this
@@ -11,7 +9,6 @@ func Test_MakeRatingsChannel_Success(t *testing.T) {
 	rating := MakeRatingsChannel()
 	if rating == nil {
 		t.Errorf("MakeRatingChannelError occurred")
-		// fmt.Printf(rating)
 	}
 }
 
@@ -44,10 +41,3 @@ func Test_Make_json_string_Fail(t *testing.T) {
 
 }
 
-// These... Are debug tests.. prob unneeded
-// func Test_Print_sorted_output_Success(t *testing.T) {
-
-// }
-// func Test_Print_sorted_output_Fail(t *testing.T) {
-
-// }

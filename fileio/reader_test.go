@@ -4,10 +4,6 @@ import (
 	"testing"
 )
 
-func Test_(t *testing.T) {
-
-}
-
 func Test_IsValidURL_Success(t *testing.T) {
 	url_str := "https://github.com/facebook/react"
 	valid := IsValidURL(url_str)
