@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"testing"
-	// "strings"
 	"bytes"
 	"net/url"
 	// "encoding/json"
@@ -176,5 +175,19 @@ func Test_SetQueryParameter_Error(t *testing.T) {
 
 	if err == nil {
 		t.Errorf("err is nil")
+	}
+}
+
+func Test_GetRepoContributors_Succes(t *testing.T) {
+	goodInputUrl := "https://github.com/facebook/react" // FIX: this is not a 
+	top3, total, err := GetRepoContributors(goodInputUrl) 
+	if !(top3 > 0) {
+		t.Errorf("RepoContributors.top3 want d, got: d")
+	}
+	if !(total > 0) {
+		t.Errorf("RepoContributors.total want d, got: d")
+	}
+	if err != nil {
+		t.Errorf("Got RepoContributors err")
 	}
 }
