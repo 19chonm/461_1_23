@@ -57,7 +57,6 @@ var testCmd = &cobra.Command{
 
 		if err != nil || testsPassed > testsRan {
 			fmt.Println("CLI: ", err.Error())
-			fmt.Println("SHIT ahppeingds")
 			os.Exit(1)
 		}
 
