@@ -10,8 +10,8 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"os/exec"
-	"strings"
 	"regexp"
+	"strings"
 	//"github.com/19chonm/461_1_23/api"
 )
 
@@ -40,7 +40,7 @@ var testCmd = &cobra.Command{
 		output := string(stdout)
 		testsPassed := strings.Count(output, "--- PASS")
 		testsRan := strings.Count(output, "=== RUN")
-		
+
 		r := regexp.MustCompile(`coverage:\s*\d+\.\d+%\sof\sstatements`)
 		matches := r.FindStringSubmatch(output)
 		coverage := matches[0]
@@ -54,14 +54,14 @@ var testCmd = &cobra.Command{
 		// cove := subStr[begIdx+1:endIdx]
 		// //coverage := output[numsIdx+1:endIdx]
 
-		if err != nil || testsPassed > testsRan{
+		if err != nil || testsPassed > testsRan {
 			fmt.Println("CLI: ", err.Error())
 			os.Exit(1)
 		}
-	
+
 		fmt.Printf("%d/%d test cases passed. %s line coverage achieved\n", testsPassed, testsRan, coverage)
 		os.Exit(0)
-		
+
 	},
 }
 

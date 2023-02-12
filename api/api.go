@@ -368,7 +368,7 @@ func GetRepoContributors(url string) (int, int, error) {
 
 func getPackageName(npmUrl string) (packageName string) {
 	i := strings.Index(npmUrl, "package")
-	return npmUrl[i+len("package")+1 : len(npmUrl)]
+	return npmUrl[i+len("package")+1:]
 }
 
 func GetNthOccurance(s string, cha rune, i int) int {

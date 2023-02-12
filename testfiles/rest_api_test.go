@@ -1,6 +1,5 @@
 package testfiles
 
-
 // import (
 // 	"testing"
 // 	"os"
@@ -17,7 +16,7 @@ package testfiles
 // 	user, repo, token, ok := api.ValidateInput(goodInputUrl)
 // 	if user != "" {
 // 		t.Errorf("user got: %s, want: %s", user, correctUser)
-// 	} 
+// 	}
 // 	if repo != "" {
 // 		t.Errorf("repo got: %s, want: %s", user, correctRepo)
 // 	}
@@ -39,7 +38,7 @@ package testfiles
 // 	user, repo, token, ok := api.ValidateInput(badInputUrl)
 // 	if user != "" {
 // 		t.Errorf("user got: %s, want: %s", user, badUser)
-// 	} 
+// 	}
 // 	if repo != "" {
 // 		t.Errorf("repo got: %s, want: %s", user, badRepo)
 // 	}
@@ -50,4 +49,3 @@ package testfiles
 // 		t.Errorf("ok got: %b, want: %b", ok, badOk)
 // 	}
 // }
-

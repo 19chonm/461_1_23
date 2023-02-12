@@ -3,17 +3,17 @@ package api
 import (
 	"fmt"
 	"io"
-	"testing"
-	"os"
 	"net/http"
+	"os"
+	"testing"
 	// "strings"
 	"bytes"
 	// "encoding/json"
 )
 
 type TestType struct {
-	Foo int `json:"foo"`
-	Bar string    `json:"bar"`
+	Foo int    `json:"foo"`
+	Bar string `json:"bar"`
 }
 
 // {"license":{"key":"mit","name":"MIT License","url":"https://api.github.com/licenses/mit"}}
@@ -26,7 +26,7 @@ func TestGoodInput(t *testing.T) {
 	user, repo, token, ok := ValidateInput(goodInputUrl)
 	if user != correctUser {
 		t.Errorf("user got: %s, want: %s.", user, correctUser)
-	} 
+	}
 	if repo != correctRepo {
 		t.Errorf("repo got: %s, want: %s.", repo, correctRepo)
 	}
@@ -48,7 +48,7 @@ func TestBadInput(t *testing.T) {
 	user, repo, token, ok := ValidateInput(badInputUrl)
 	if user != badUser {
 		t.Errorf("user got: %s, want: %s.", user, badUser)
-	} 
+	}
 	if repo != badRepo {
 		t.Errorf("repo got: %s, want: %s.", repo, badRepo)
 	}
@@ -62,8 +62,8 @@ func TestBadInput(t *testing.T) {
 
 func TestDecodeResponse(t *testing.T) {
 	res := http.Response{
-        Body: io.NopCloser(bytes.NewBufferString("{\"foo\": 461, \"bar\": \"Project\"}")),
-    }
+		Body: io.NopCloser(bytes.NewBufferString("{\"foo\": 461, \"bar\": \"Project\"}")),
+	}
 	correctFoo := 461
 	correctBar := "Project"
 	jsonRes, err := DecodeResponse[TestType](&res)

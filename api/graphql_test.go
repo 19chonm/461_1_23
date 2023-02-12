@@ -2,7 +2,6 @@ package api
 
 import (
 	"testing"
-
 )
 
 /*
@@ -23,7 +22,7 @@ func TestCorrectFactors(t *testing.T) {
 	nodistFactors := [3]int64{1396, 56, 394}
 
 	owner_repo_names := [5]string{
-		"https://github.com/facebook/react","https://github.com/axios/axios", 
+		"https://github.com/facebook/react", "https://github.com/axios/axios",
 		"https://github.com/expressjs/express", "https://github.com/request/request",
 		"https://github.com/nullivex/nodist",
 	}
