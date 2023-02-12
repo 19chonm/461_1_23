@@ -112,7 +112,7 @@ func ValidateInput(inputUrl string) (string, string, string, error) {
 }
 
 // Build and a request to the given endpoint; return HTTP response
-func sendGithubRequestHelper(endpoint string, token string) (res *http.Response, err error, statusCode int) {
+func SendGithubRequestHelper(endpoint string, token string) (res *http.Response, err error, statusCode int) {
 	// build GitHub API request
 	req, _ := http.NewRequest(http.MethodGet, endpoint, nil)
 	req.Header.Add("Accept", "application/vnd.github+json")
@@ -124,7 +124,7 @@ func sendGithubRequestHelper(endpoint string, token string) (res *http.Response,
 	for {
 		res, err = http.DefaultClient.Do(req)
 		retry_count += 1
-
+		statusCode = res.StatusCode
 		if err != nil {
 			err = fmt.Errorf("Failed to send HTTP request")
 			statusCode = 500 // Internal server error
@@ -134,11 +134,10 @@ func sendGithubRequestHelper(endpoint string, token string) (res *http.Response,
 				time.Sleep(retry_sleep_time * time.Second)
 				continue // Retry
 			} else {
-				statusCode = res.StatusCode
 				err = fmt.Errorf("Github request exceed max retry count for error code 202")
+				statusCode = 500
 			}
 		} else if res.StatusCode != 200 {
-			statusCode = res.StatusCode // forward API error code
 			err = fmt.Errorf("GitHub request responded with error code %d", statusCode)
 		}
 		return
@@ -175,7 +174,7 @@ func SetQueryParameter(endpoint *string, parameter string, value string) (err er
 
 // Send GitHub API request and return response of type T
 func SendGithubRequest[T Response](endpoint string, token string) (jsonRes T, err error, statusCode int) {
-	res, err, statusCode := sendGithubRequestHelper(endpoint, token)
+	res, err, statusCode := SendGithubRequestHelper(endpoint, token)
 	if err != nil {
 		return
 	}
@@ -210,7 +209,7 @@ func SendGithubRequestList[T Response](endpoint string, token string, maxPages i
 	jsonRes = make([]T, 0, maxPages*100)
 	for {
 		var res *http.Response
-		res, err, statusCode = sendGithubRequestHelper(endpoint, token)
+		res, err, statusCode = SendGithubRequestHelper(endpoint, token)
 		if err != nil {
 			return
 		}
@@ -366,7 +365,7 @@ func GetRepoContributors(url string) (int, int, error) {
 	return c1 + c2 + c3, tot, nil
 }
 
-func getPackageName(npmUrl string) (packageName string) {
+func GetPackageName(npmUrl string) (packageName string) {
 	i := strings.Index(npmUrl, "package")
 	return npmUrl[i+len("package")+1:]
 }
@@ -398,7 +397,7 @@ func GetGithubUrl(npmUrl string) (githubUrl string, err error) {
 	}
 
 	// Convert url
-	packageName := getPackageName(npmUrl)
+	packageName := GetPackageName(npmUrl)
 	app := "npm"
 	arg := []string{"repo", packageName, "--browser", "false"}
 
