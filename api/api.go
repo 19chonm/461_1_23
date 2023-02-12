@@ -84,20 +84,20 @@ func ValidateInput(inputUrl string) (string, string, string, error) {
 
 	// validate URL
 	if inputUrl == "" {
-		return user, repo, token, fmt.Errorf("ValidateInput: InputURL not provided")
+		return "", "", "", fmt.Errorf("ValidateInput: InputURL not provided")
 	}
 
 	urlObject, err := url.Parse(inputUrl)
 	if err != nil {
-		return user, repo, token, fmt.Errorf("ValidateInput: InputURL parse error")
+		return "", "", "", fmt.Errorf("ValidateInput: InputURL parse error")
 	}
 	if urlObject.Host != "github.com" {
-		return user, repo, token, fmt.Errorf("ValidateInput: InputURL is not a GitHub URL: %s", urlObject)
+		return "", "", "", fmt.Errorf("ValidateInput: InputURL is not a GitHub URL: %s", urlObject)
 	}
 
 	path := strings.Split(urlObject.EscapedPath(), "/")[1:]
 	if len(path) != 2 {
-		return user, repo, token, fmt.Errorf("ValidateInput: InputURL does not point to a GitHub repository: %s", urlObject)
+		return "", "", "", fmt.Errorf("ValidateInput: InputURL does not point to a GitHub repository: %s", urlObject)
 	}
 	user, repo = path[0], path[1]
 
@@ -105,7 +105,10 @@ func ValidateInput(inputUrl string) (string, string, string, error) {
 	token, ok := os.LookupEnv("GITHUB_TOKEN")
 
 	if !ok {
-		return user, repo, token, fmt.Errorf("ValidateInput: Error getting token from environment variable")
+		return "", "", "", fmt.Errorf("ValidateInput: Error getting token from environment variable")
+	}
+	if token == "" {
+		return "", "", "", fmt.Errorf("ValidateInput: Token is empty")
 	}
 
 	return user, repo, token, nil
@@ -124,11 +127,13 @@ func SendGithubRequestHelper(endpoint string, token string) (res *http.Response,
 	for {
 		res, err = http.DefaultClient.Do(req)
 		retry_count += 1
-		statusCode = res.StatusCode
 		if err != nil {
 			err = fmt.Errorf("Failed to send HTTP request")
 			statusCode = 500 // Internal server error
-		} else if res.StatusCode == 202 {
+			return
+		}
+		statusCode = res.StatusCode
+		if res.StatusCode == 202 {
 			if retry_count <= max_retry_count {
 				fmt.Println("API: Github status code 202 - Retry #", retry_count, " for ", endpoint)
 				time.Sleep(retry_sleep_time * time.Second)
@@ -203,6 +208,7 @@ func SendGithubRequest[T Response](endpoint string, token string) (jsonRes T, er
 func SendGithubRequestList[T Response](endpoint string, token string, maxPages int) (jsonRes []T, err error, statusCode int) {
 	err = SetQueryParameter(&endpoint, "per_page", "100")
 	if err != nil {
+		err = fmt.Errorf("Failed to set query parameter")
 		statusCode = 500 // Internal server error
 		return
 	}
@@ -260,6 +266,9 @@ func GetRepoLicense(url string) (string, error) {
 
 	res, err, statusCode := SendGithubRequest[LicenseResponse](fmt.Sprintf("https://api.github.com/repos/%s/%s/license", user, repo), token)
 	if err != nil {
+		if statusCode == 404 {
+			return "", nil // if license not found, just return empty string
+		}
 		fmt.Fprintf(os.Stderr, "SendGithubRequest(): %s status code: %d\n", err.Error(), statusCode)
 		return "", fmt.Errorf("GetRepoLicense: %s", err.Error())
 	}
