@@ -10,6 +10,8 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/19chonm/461_1_23/logger"
 )
 
 const retry_sleep_time = 10
@@ -135,7 +137,8 @@ func SendGithubRequestHelper(endpoint string, token string) (res *http.Response,
 		statusCode = res.StatusCode
 		if res.StatusCode == 202 {
 			if retry_count <= max_retry_count {
-				fmt.Println("API: Github status code 202 - Retry #", retry_count, " for ", endpoint)
+				// fmt.Println("API: Github status code 202 - Retry #", retry_count, " for ", endpoint)
+				logger.InfoMsg(fmt.Sprintf("API: Github status code 202 - Retry #%d for %s", retry_count, endpoint))
 				time.Sleep(retry_sleep_time * time.Second)
 				continue // Retry
 			} else {
@@ -414,7 +417,8 @@ func GetGithubUrl(npmUrl string) (githubUrl string, err error) {
 	stdout, err := exec_output.Output()
 
 	if err != nil {
-		fmt.Printf("Error getting Github url from NPM url: %s", err)
+		// fmt.Printf("Error getting Github url from NPM url: %s", err)
+		logger.DebugMsg(fmt.Sprintf("Error getting Github url from NPM url: %s", err))
 		return "", err
 	}
 
