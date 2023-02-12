@@ -8,6 +8,7 @@ import (
 	"testing"
 	// "strings"
 	"bytes"
+	"net/url"
 	// "encoding/json"
 )
 
@@ -18,7 +19,7 @@ type TestType struct {
 
 // {"license":{"key":"mit","name":"MIT License","url":"https://api.github.com/licenses/mit"}}
 // Input URL Tests
-func TestGoodInput(t *testing.T) {
+func Test_Input_Success(t *testing.T) {
 	var goodInputUrl string = "https://github.com/facebook/react"
 	var correctUser string = "facebook"
 	var correctRepo string = "react"
@@ -38,7 +39,7 @@ func TestGoodInput(t *testing.T) {
 	}
 }
 
-func TestBadInput(t *testing.T) {
+func Test_Input_BadURL(t *testing.T) {
 	var badInputUrl string = "https://google.com/facebok/reat"
 	var badUser string = ""
 	var badRepo string = ""
@@ -60,7 +61,7 @@ func TestBadInput(t *testing.T) {
 	}
 }
 
-func TestDecodeResponse(t *testing.T) {
+func Test_DecodeResponse(t *testing.T) {
 	res := http.Response{
 		Body: io.NopCloser(bytes.NewBufferString("{\"foo\": 461, \"bar\": \"Project\"}")),
 	}
@@ -76,5 +77,104 @@ func TestDecodeResponse(t *testing.T) {
 	}
 	if err != nil {
 		t.Errorf("err got: %v", err)
+	}
+}
+
+func Test_SendGithubRequestHelper_Success(t *testing.T) {
+	endpoint := "https://api.github.com/users/octocat/orgs"
+	token, _ := os.LookupEnv("GITHUB_TOKEN")
+
+	// retry_count := 0
+	res, err, statusCode := SendGithubRequestHelper(endpoint, token)
+
+	if res == nil {
+		t.Errorf("res is nil")
+	}
+
+	if err != nil {
+		t.Errorf("Got unexpected error %s", err.Error())
+	} 
+	if (statusCode != 200) {
+		t.Errorf("GitHub request responded with error code %d", statusCode)
+	}
+}
+
+func Test_SendGithubRequestHelper_BadEndpoint(t *testing.T) {
+	endpoint := "https://api.github.com/bad_endpoint"
+	token, _ := os.LookupEnv("GITHUB_TOKEN")
+
+	// retry_count := 0
+	_, err, statusCode := SendGithubRequestHelper(endpoint, token)
+
+	if err == nil {
+		t.Errorf("err is nil")
+	} 
+	if (statusCode == 200) {
+		t.Errorf("Got 200 status code")
+	}
+}
+
+func Test_SendGithubRequestHelper_NotFound(t *testing.T) {
+	endpoint := "https://api.github.com/repos/fakeuser/fakerepohopefully"
+	token, _ := os.LookupEnv("GITHUB_TOKEN")
+
+	// retry_count := 0
+	_, err, statusCode := SendGithubRequestHelper(endpoint, token)
+
+	if err == nil {
+		t.Errorf("err is nil")
+	} 
+	if (statusCode != 404) {
+		t.Errorf("want 404 status code, got %d", statusCode)
+	}
+}
+
+func Test_SendGithubRequestHelper_BadToken(t *testing.T) {
+	endpoint := "https://api.github.com/user/octocat/orgs"
+	token := "invalid_token"
+
+	// retry_count := 0
+	_, err, statusCode := SendGithubRequestHelper(endpoint, token)
+
+	if err == nil {
+		t.Errorf("err is nil")
+	} 
+	if (statusCode == 200) {
+		t.Errorf("Got 200 status code")
+	}
+}
+
+func Test_SetQueryParameter_SuccessNotExists(t *testing.T) {
+	endpoint := "https://example.com/path?foo=bar"
+	SetQueryParameter(&endpoint, "baz", "quux")
+	urlObject, _ := url.Parse(endpoint)
+	query := urlObject.Query()
+	
+	if query.Get("baz") != "quux" {
+		t.Errorf("want baz to be quux, got %s", query.Get("baz"))
+	}
+	if query.Get("foo") != "bar" {
+		t.Errorf("want foo to be bar, got %s", query.Get("foo"))
+	}
+}
+
+func Test_SetQueryParameter_SuccessExists(t *testing.T) {
+	endpoint := "https://example.com/path?foo=bar"
+	SetQueryParameter(&endpoint, "foo", "baz")
+	urlObject, _ := url.Parse(endpoint)
+	query := urlObject.Query()
+
+	if query.Get("foo") != "baz" {
+		t.Errorf("want foo to be bar, got %s", query.Get("foo"))
+	}
+}
+
+func Test_SetQueryParameter_Error(t *testing.T) {
+	endpoint := "\n" // bad endpoint
+	SetQueryParameter(&endpoint, "foo", "bar")
+	_, err := url.Parse(endpoint)
+
+	if err == nil {
+		t.Errorf("err is nil")
 	}
 }
