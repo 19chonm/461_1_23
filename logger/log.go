@@ -19,7 +19,7 @@ func init() {
 		log.SetLevel(log.TraceLevel)
 	}
 
-	file, err := os.Create(path + "log.json")
+	file, _ := os.Create(path + "log.json")
 	log.SetOutput(file)
 
 	logLvl := os.Getenv(("LOG_LEVEL"))
