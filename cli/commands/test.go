@@ -31,7 +31,7 @@ var testCmd = &cobra.Command{
 		//packagesToTest := []string{"api/", "worker/"}
 
 		app := "go"
-		testArgs := []string{"test", "./...", "-cover", "-v"}
+		testArgs := []string{"test", "-v", "-coverpkg=./...", "-coverprofile=profile.cov", "./..."}
 
 		exec_output := exec.Command(app, testArgs...)
 		stdout, err := exec_output.CombinedOutput()
@@ -42,18 +42,17 @@ var testCmd = &cobra.Command{
 		testsPassed := strings.Count(output, "--- PASS")
 		testsRan := strings.Count(output, "=== RUN")
 
-		r := regexp.MustCompile(`coverage:\s*\d+\.\d+%\sof\sstatements`)
-		matches := r.FindStringSubmatch(output)
-		coverage := matches[0]
+		re := regexp.MustCompile(`(?P<coverage>coverage:\s)(?P<numbers>\d+\.\d)(?P<ofstatement>%\sof\sstatements in ./...)`)
+		result := make(map[string]string)
+		match := re.FindStringSubmatch(output)
+		fmt.Println(match)
+		for i, name := range re.SubexpNames() {
+			if i != 0 && name != "" {
+				result[name] = match[i]
+			}
+		}
 
-		// covIdx := strings.Index(output, "coverage: ")
-		// statIdx := strings.Index(output, " of statements")
-		// subStr := output[covIdx:statIdx]
-		// fmt.Println(subStr)
-		// begIdx := api.GetNthOccurance(subStr, 20, 1)
-		// endIdx:= api.GetNthOccurance(subStr, 20, 2)
-		// cove := subStr[begIdx+1:endIdx]
-		// //coverage := output[numsIdx+1:endIdx]
+		coverage := result["numbers"] + "%"
 
 		if err != nil || testsPassed > testsRan {
 			fmt.Println("CLI: ", err.Error())
