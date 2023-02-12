@@ -32,6 +32,7 @@ var testCmd = &cobra.Command{
 
 		app := "go"
 		testArgs := []string{"test", "-v", "-coverpkg=./...", "-coverprofile=profile.cov", "./..."}
+		//testArgs := []string{"test", "./...", "-cover", "-v"}
 
 		exec_output := exec.Command(app, testArgs...)
 		stdout, err := exec_output.CombinedOutput()
@@ -45,7 +46,7 @@ var testCmd = &cobra.Command{
 		re := regexp.MustCompile(`(?P<coverage>coverage:\s)(?P<numbers>\d+\.\d)(?P<ofstatement>%\sof\sstatements in ./...)`)
 		result := make(map[string]string)
 		match := re.FindStringSubmatch(output)
-		fmt.Println(match)
+		//fmt.Println(match)
 		for i, name := range re.SubexpNames() {
 			if i != 0 && name != "" {
 				result[name] = match[i]
