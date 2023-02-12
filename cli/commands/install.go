@@ -22,7 +22,7 @@ var installCmd = &cobra.Command{
 
 		// Install Logrus
 		app := "go"
-		arg := []string{"get", "github.com/19chonm/461_1_23/logger"}
+		arg := []string{"get", "github.com/sirupsen/logrus"}
 		exec_output := exec.Command(app, arg...)
 		stdout, err := exec_output.Output()
 
