@@ -1,10 +1,10 @@
 package api
 
 import (
+	"fmt"
 	"testing"
 	"os"
 	// api 
-	"github.com/19chonm/461_1_23/api"
 )
 	// {"license":{"key":"mit","name":"MIT License","url":"https://api.github.com/licenses/mit"}}
 // Input URL Tests
@@ -12,9 +12,9 @@ func TestGoodInput(t *testing.T) {
 	var goodInputUrl string = "https://github.com/qiangxue/go-rest-api"
 	var correctUser string = ""
 	var correctRepo string = ""
-	correctToken, correctOk := os.LookupEnv("GITHUB_TOKEN")
+	correctToken, _ := os.LookupEnv("GITHUB_TOKEN")
 
-	user, repo, token, ok := api.ValidateInput(goodInputUrl)
+	user, repo, token, ok := ValidateInput(goodInputUrl)
 	if user != "" {
 		t.Errorf("user got: %s, want: %s", user, correctUser)
 	} 
@@ -25,7 +25,7 @@ func TestGoodInput(t *testing.T) {
 		t.Errorf("token got: %s, want: %s", user, correctToken)
 	}
 	if ok != nil {
-		t.Errorf("ok got: %b, want: %b", ok, correctOk)
+		t.Errorf("ok was not nil: %s", ok.Error())
 	}
 }
 
@@ -34,9 +34,9 @@ func TestBadInput(t *testing.T) {
 	var badUser string = "badUser"
 	var badRepo string = "badRepo"
 	var badToken string = "badToken"
-	var badOk bool = false
+	badOk := fmt.Errorf("blah")
 
-	user, repo, token, ok := api.ValidateInput(badInputUrl)
+	user, repo, token, ok := ValidateInput(badInputUrl)
 	if user != "" {
 		t.Errorf("user got: %s, want: %s", user, badUser)
 	} 
@@ -46,8 +46,8 @@ func TestBadInput(t *testing.T) {
 	if token != "" {
 		t.Errorf("token got: %s, want: %s", user, badToken)
 	}
-	if ok != "" {
-		t.Errorf("ok got: %b, want: %b", ok, badOk)
+	if ok != badOk {
+		t.Errorf("ok got: %s, want: %s", ok.Error(), badOk.Error())
 	}
 }
 

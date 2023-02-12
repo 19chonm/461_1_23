@@ -3,7 +3,6 @@ package api
 import (
 	"testing"
 
-	"github.com/19chonm/461_1_23/api"
 )
 
 /*
@@ -37,7 +36,7 @@ func TestCorrectFactors(t *testing.T) {
 	factors = append(factors, nodistFactors)
 
 	for i := range owner_repo_names {
-		f1, f2, f3, err := api.GetCorrectnessFactors(owner_repo_names[i])
+		f1, f2, f3, err := GetCorrectnessFactors(owner_repo_names[i])
 
 		if int64(f1) < (factors[i][0]) || int64(f2) < factors[i][1] || int64(f3) < factors[i][2] {
 			t.Errorf("user got: %d, %d, %d. want at least: %d, %d, %d", f1, f2, f3, factors[i][0], factors[i][1], factors[i][2])
@@ -51,9 +50,8 @@ func TestCorrectFactors(t *testing.T) {
 // Checking is done so that a valid response is received. Not for correctness
 
 func TestGoodGithubNames(t *testing.T) {
-	goodOwnerName := "facebook"
-	goodRepoName := "react"
-	m1, m2, m3, err := api.GetCorrectnessFactors(goodOwnerName, goodRepoName)
+	goodUrl := "https://github.com/facebook/react"
+	m1, m2, m3, err := GetCorrectnessFactors(goodUrl)
 	if m1 == 0 && m2 == 0 && m3 == 0 && err != nil {
 		t.Errorf("user got error %s", err)
 	}
@@ -61,9 +59,8 @@ func TestGoodGithubNames(t *testing.T) {
 }
 
 func TestBadGithubNames(t *testing.T) {
-	badOwnerName := "somethingthatsurelydoesntexist"
-	badRepoName := "xjaop!@#$%^&asd\naliru"
-	m1, m2, m3, err := api.GetCorrectnessFactors(badOwnerName, badRepoName)
+	badUrl := "xjaop!@#$%^&asd\naliru"
+	m1, m2, m3, err := GetCorrectnessFactors(badUrl)
 	if err == nil || m1 != 0 || m2 != 0 || m3 != 0 {
 		t.Errorf("expected error, got %d, %d, %d", m1, m2, m3)
 	}

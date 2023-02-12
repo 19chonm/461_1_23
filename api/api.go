@@ -406,7 +406,7 @@ func GetGithubUrl(npmUrl string) (githubUrl string, err error) {
 	stdout, err := exec_output.Output()
 
 	if err != nil {
-		fmt.Println("Error getting Github url from NPM url: %s", err)
+		fmt.Printf("Error getting Github url from NPM url: %s\n", err.Error())
 		return "", err
 	}
 
