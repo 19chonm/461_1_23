@@ -146,7 +146,7 @@ func sendGithubRequestHelper(endpoint string, token string) (res *http.Response,
 }
 
 // Decode HTTP response using JSON decoder
-func decodeResponse[T any](res *http.Response) (jsonRes T, err error) {
+func DecodeResponse[T any](res *http.Response) (jsonRes T, err error) {
 	decoder := json.NewDecoder(res.Body)
 	for {
 		err = decoder.Decode(&jsonRes)
@@ -160,7 +160,7 @@ func decodeResponse[T any](res *http.Response) (jsonRes T, err error) {
 }
 
 // Set a query parameter on an HTTP request
-func setQueryParameter(endpoint *string, parameter string, value string) (err error) {
+func SetQueryParameter(endpoint *string, parameter string, value string) (err error) {
 	var urlObject *url.URL
 	urlObject, err = url.Parse(*endpoint)
 	if err != nil {
@@ -174,13 +174,13 @@ func setQueryParameter(endpoint *string, parameter string, value string) (err er
 }
 
 // Send GitHub API request and return response of type T
-func sendGithubRequest[T Response](endpoint string, token string) (jsonRes T, err error, statusCode int) {
+func SendGithubRequest[T Response](endpoint string, token string) (jsonRes T, err error, statusCode int) {
 	res, err, statusCode := sendGithubRequestHelper(endpoint, token)
 	if err != nil {
 		return
 	}
 
-	jsonRes, err = decodeResponse[T](res)
+	jsonRes, err = DecodeResponse[T](res)
 
 	if !jsonRes.Validate() {
 		err = fmt.Errorf("Failed to parse GitHub response")
@@ -201,8 +201,8 @@ func sendGithubRequest[T Response](endpoint string, token string) (jsonRes T, er
 
 // Send GitHub API request and return response of type T
 // Follows pages, up to maxPages
-func sendGithubRequestList[T Response](endpoint string, token string, maxPages int) (jsonRes []T, err error, statusCode int) {
-	err = setQueryParameter(&endpoint, "per_page", "100")
+func SendGithubRequestList[T Response](endpoint string, token string, maxPages int) (jsonRes []T, err error, statusCode int) {
+	err = SetQueryParameter(&endpoint, "per_page", "100")
 	if err != nil {
 		statusCode = 500 // Internal server error
 		return
@@ -216,7 +216,7 @@ func sendGithubRequestList[T Response](endpoint string, token string, maxPages i
 		}
 
 		var partialJsonRes []T = make([]T, 0, 100)
-		partialJsonRes, err = decodeResponse[[]T](res)
+		partialJsonRes, err = DecodeResponse[[]T](res)
 
 		for _, t := range partialJsonRes {
 			if !t.Validate() {
@@ -259,9 +259,9 @@ func GetRepoLicense(url string) (string, error) {
 		return "", fmt.Errorf("GetRepoLicense: %s", err.Error())
 	}
 
-	res, err, statusCode := sendGithubRequest[LicenseResponse](fmt.Sprintf("https://api.github.com/repos/%s/%s/license", user, repo), token)
+	res, err, statusCode := SendGithubRequest[LicenseResponse](fmt.Sprintf("https://api.github.com/repos/%s/%s/license", user, repo), token)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "sendGithubRequest(): %s status code: %d\n", err.Error(), statusCode)
+		fmt.Fprintf(os.Stderr, "SendGithubRequest(): %s status code: %d\n", err.Error(), statusCode)
 		return "", fmt.Errorf("GetRepoLicense: %s", err.Error())
 	}
 
@@ -279,9 +279,9 @@ func GetRepoIssueAverageLifespan(url string) (float64, error) {
 		return 0.0, fmt.Errorf("GetRepoIssueAverageLifespan: %s", err.Error())
 	}
 
-	res, err, statusCode := sendGithubRequestList[IssueResponse](fmt.Sprintf("https://api.github.com/repos/%s/%s/issues?state=closed", user, repo), token, 5)
+	res, err, statusCode := SendGithubRequestList[IssueResponse](fmt.Sprintf("https://api.github.com/repos/%s/%s/issues?state=closed", user, repo), token, 5)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "sendGithubRequest(): %s statuscode: %d\n", err.Error(), statusCode)
+		fmt.Fprintf(os.Stderr, "SendGithubRequest(): %s statuscode: %d\n", err.Error(), statusCode)
 		return 0.0, fmt.Errorf("GetRepoIssueAverageLifespan: %s", err.Error())
 	}
 
@@ -323,9 +323,9 @@ func GetRepoContributors(url string) (int, int, error) {
 		return 0, 0, fmt.Errorf("GetRepoContributors: error on validate input")
 	}
 
-	res, err, statusCode := sendGithubRequest[ContributorStatsResponse](fmt.Sprintf("https://api.github.com/repos/%s/%s/stats/contributors", user, repo), token)
+	res, err, statusCode := SendGithubRequest[ContributorStatsResponse](fmt.Sprintf("https://api.github.com/repos/%s/%s/stats/contributors", user, repo), token)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "sendGithubRequest(): %s statuscode: %d\n", err.Error(), statusCode)
+		fmt.Fprintf(os.Stderr, "SendGithubRequest(): %s statuscode: %d\n", err.Error(), statusCode)
 		return 0, 0, fmt.Errorf("GetRepoContributors: %s", err.Error())
 	}
 
