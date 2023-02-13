@@ -76,9 +76,8 @@ func Make_json_string(r Rating) string {
 	// Convert the Rating struct into a json string
 	jsonString, err := json.Marshal(r)
 	if err != nil {
-		logger.DebugMsg(fmt.Sprintf("for: %+v\n", r), "fileio: make_json_string fail")
-		fmt.Printf("for: %+v\n", r)
-		panic("fileio: Make_json_string fail")
+		fmt.Fprintf(os.Stderr, "fileio: Make_json_string fail for: %+v\n", r)
+		os.Exit(1)
 	}
 
 	return string(jsonString)
