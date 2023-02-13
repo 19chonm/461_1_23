@@ -28,11 +28,11 @@ The following commands require install and build beforehand:
 `./run URL_FILE` to run main program  
 `./run test` to run test cases  
 
-# Used Stackoverflow articles
+# Used Stack Overflow articles
 Module : Link  
 cli/scanner : https://stackoverflow.com/questions/18159704/how-to-debug-exit-status-1-error-when-running-exec-command-in-golang  
 worker : https://stackoverflow.com/questions/25306073/always-have-x-number-of-goroutines-running-at-any-time  
 worker : https://stackoverflow.com/questions/55203251/limiting-number-of-go-routines-running  
 scanner : https://stackoverflow.com/questions/2466735/how-to-sparsely-checkout-only-one-single-file-from-a-git-repository
+logger : https://stackoverflow.com/questions/47514812/how-to-use-debug-log-in-golang
 GraphQL API: https://stackoverflow.com/questions/27931139/how-to-use-github-v3-api-to-get-commit-count-for-a-repo
-
