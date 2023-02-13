@@ -7,13 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func test() {
-	os.Setenv("LOG_FILE", "C:/Users/mmcho/OneDrive/Documents/dummy/461_1_23/")
-	os.Setenv("LOG_LEVEL", "1")
-}
-
 func init() {
-	test()
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
 	path, ok := os.LookupEnv("LOG_FILE")
@@ -29,7 +23,12 @@ func init() {
 	}
 
 	log.SetOutput(file)
-	logLvl := os.Getenv(("LOG_LEVEL"))
+	logLvl, ok := os.LookupEnv(("LOG_LEVEL"))
+
+	if !ok {
+		fmt.Println("Log level not found")
+		os.Exit(1)
+	}
 
 	if logLvl == "1" {
 		log.SetLevel(log.InfoLevel)
