@@ -58,6 +58,7 @@ var testCmd = &cobra.Command{
 		coverage := result["numbers"] + "%"
 
 		if err != nil || testsPassed > testsRan {
+			fmt.Printf("%d/%d test cases passed. %s line coverage achieved\n", testsPassed, testsRan, coverage)
 			logger.DebugMsg("CLI: ", err.Error())
 			os.Exit(1)
 		}
