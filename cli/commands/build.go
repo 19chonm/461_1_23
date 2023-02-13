@@ -26,10 +26,8 @@ var buildCmd = &cobra.Command{
 		stdout, err := exec_output.CombinedOutput()
 
 		if err != nil {
-			// fmt.Println("CLI: ", fmt.Sprint(err)+": "+string(stdout))
 			logger.DebugMsg("CLI: ", fmt.Sprint(err)+": "+string(stdout))
 		} else {
-			// fmt.Println("CLI: Build successful", string(stdout))
 			logger.InfoMsg("CLI: Build successful", string(stdout))
 		}
 	},

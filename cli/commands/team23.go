@@ -34,9 +34,6 @@ var rootCmd = &cobra.Command{
 func Execute() {
 
 	if len(os.Args) != 2 {
-		// fmt.Println(`CLI: Please use one of the recognized commands: 'build',
-		// 'install', 'test', or 'URL_FILE' where URL_FILE is an absolute path
-		// to a file`)
 		logger.DebugMsg(`CLI: Please use one of the recognized commands: 'build', 
 		'install', 'test', or 'URL_FILE' where URL_FILE is an absolute path 
 		to a file`)
@@ -56,12 +53,10 @@ func Execute() {
 		os.Args[1] == "test" {
 
 		if err := rootCmd.Execute(); err != nil {
-			// fmt.Println("CLI: Error using CLI ", err)
 			logger.DebugMsg("CLI: Error using CLI ", err.Error())
 			os.Exit(1)
 		}
 	} else {
-		// fmt.Println("CLI: Not a recognized command")
 		logger.DebugMsg("CLI: Not a recognized command")
 		os.Exit(1)
 	}

@@ -16,12 +16,10 @@ func StartWorkers(urlch <-chan string, ratingch chan<- fileio.Rating) {
 	for i := 0; i < numworkers; i++ {
 		// Start each worker
 		go func() {
-			// fmt.Println("worker: Start worker")
 			logger.InfoMsg("worker: Start worker")
 			for {
 				url, ok := <-urlch
 				if !ok { // Channel has been closed
-					// fmt.Println("worker: Close worker")
 					logger.InfoMsg(("worker: Close worker"))
 					wg.Done()
 					return

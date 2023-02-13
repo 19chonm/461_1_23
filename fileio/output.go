@@ -74,6 +74,6 @@ func Make_json_string(r Rating) string {
 
 func Print_sorted_output(ratings []Rating) {
 	for i := range ratings {
-		fmt.Println(Make_json_string(ratings[i]))
+		logger.InfoMsg(Make_json_string(ratings[i]))
 	}
 }
