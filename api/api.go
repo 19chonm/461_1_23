@@ -46,7 +46,8 @@ type ContributorStatsResponse []struct {
 }
 
 func (self LicenseResponse) Validate() bool {
-	return self.License.Key != nil && self.License.Name != nil && self.License.Url != nil
+	// Not all valid LicenseResponses have a URL (ex: if the License is "other")
+	return self.License.Key != nil && self.License.Name != nil
 }
 
 func (self IssueResponse) Validate() bool {
